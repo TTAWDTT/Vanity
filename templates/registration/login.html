@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>登录 - Vanity 项目</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .login-header h1 {
+            color: #333;
+            margin: 0;
+            font-size: 1.8rem;
+        }
+        
+        .login-header p {
+            color: #666;
+            margin: 0.5rem 0 0 0;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #555;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .btn-login {
+            width: 100%;
+            padding: 0.75rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: transform 0.2s ease;
+        }
+        
+        .btn-login:hover {
+            transform: translateY(-2px);
+        }
+        
+        .error-messages {
+            background: #fee;
+            border: 1px solid #fcc;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            color: #c33;
+        }
+        
+        .links {
+            text-align: center;
+            margin-top: 1.5rem;
+        }
+        
+        .links a {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .links a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>登录</h1>
+            <p>请输入您的账户信息</p>
+        </div>
+        
+        {% if form.errors %}
+            <div class="error-messages">
+                {% for field in form %}
+                    {% for error in field.errors %}
+                        <p>{{ error }}</p>
+                    {% endfor %}
+                {% endfor %}
+                {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="{{ form.username.id_for_label }}">用户名:</label>
+                {{ form.username }}
+            </div>
+            
+            <div class="form-group">
+                <label for="{{ form.password.id_for_label }}">密码:</label>
+                {{ form.password }}
+            </div>
+            
+            <button type="submit" class="btn-login">登录</button>
+        </form>
+        
+        <div class="links">
+            <a href="{% url 'register' %}">还没有账户？立即注册</a>
+            <a href="{% url 'admin:index' %}">管理员登录</a>
+        </div>
+    </div>
+</body>
+</html>

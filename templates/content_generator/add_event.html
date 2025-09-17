@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>写日记 - Vanity</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* 深色主题 */
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-sidebar: #0f0f23;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --blur-bg: rgba(22, 33, 62, 0.8);
+        }
+
+        [data-theme="light"] {
+            /* 浅色主题 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #f1f5f9;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --blur-bg: rgba(248, 250, 252, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px var(--shadow);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle .sun {
+            color: var(--warning);
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        .theme-toggle .moon {
+            color: var(--accent);
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .sun {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .moon {
+            opacity: 0;
+            transform: rotate(-180deg);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            z-index: 100;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
+            margin: 0.5rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent);
+            color: white;
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.6s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        .header {
+            background: var(--blur-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .content-area {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-textarea {
+            min-height: 150px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.6;
+        }
+
+        .mood-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .mood-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .mood-option:hover {
+            border-color: var(--accent);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .mood-option.selected {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .mood-emoji {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .mood-label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+
+        .file-upload {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-label {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .file-label:hover {
+            border-color: var(--accent);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .file-preview {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .file-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px var(--shadow);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-card);
+            transform: translateY(-2px);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: flex-end;
+            margin-top: 2rem;
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+
+            .mood-selector {
+                grid-template-columns: repeat(4, 1fr);
+            }
+
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-sun sun"></i>
+        <i class="fas fa-moon moon"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">Vanity</div>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item">
+                <a href="{% url 'content_generator:task_list' %}" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    <span>任务管理</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'content_generator:event_list' %}" class="nav-link active">
+                    <i class="fas fa-book"></i>
+                    <span>日记</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'content_generator:daily_summary' %}" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>日总结</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="page-title">写日记</h1>
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span>{{ user.username }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="form-card slide-up">
+                <form method="post" enctype="multipart/form-data" id="diaryForm">
+                    {% csrf_token %}
+                    
+                    <!-- Title Field -->
+                    <div class="form-group">
+                        <label for="title" class="form-label">
+                            <i class="fas fa-heading"></i>
+                            日记标题
+                        </label>
+                        <input type="text" 
+                               id="title" 
+                               name="title" 
+                               class="form-input" 
+                               placeholder="今天发生了什么特别的事情？"
+                               required>
+                    </div>
+
+                    <!-- Content Field -->
+                    <div class="form-group">
+                        <label for="content" class="form-label">
+                            <i class="fas fa-edit"></i>
+                            日记内容
+                        </label>
+                        <textarea id="content" 
+                                  name="content" 
+                                  class="form-input form-textarea" 
+                                  placeholder="记录下今天的感受、想法或者有意思的事情..."
+                                  required></textarea>
+                    </div>
+
+                    <!-- Mood Selector -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-smile"></i>
+                            今天的心情
+                        </label>
+                        <div class="mood-selector">
+                            <div class="mood-option" data-mood="😄" onclick="selectMood('😄')">
+                                <div class="mood-emoji">😄</div>
+                                <div class="mood-label">开心</div>
+                            </div>
+                            <div class="mood-option" data-mood="😢" onclick="selectMood('😢')">
+                                <div class="mood-emoji">😢</div>
+                                <div class="mood-label">悲伤</div>
+                            </div>
+                            <div class="mood-option" data-mood="😠" onclick="selectMood('😠')">
+                                <div class="mood-emoji">😠</div>
+                                <div class="mood-label">愤怒</div>
+                            </div>
+                            <div class="mood-option" data-mood="😲" onclick="selectMood('😲')">
+                                <div class="mood-emoji">😲</div>
+                                <div class="mood-label">惊讶</div>
+                            </div>
+                            <div class="mood-option" data-mood="😴" onclick="selectMood('😴')">
+                                <div class="mood-emoji">😴</div>
+                                <div class="mood-label">困倦</div>
+                            </div>
+                            <div class="mood-option" data-mood="😍" onclick="selectMood('😍')">
+                                <div class="mood-emoji">😍</div>
+                                <div class="mood-label">兴奋</div>
+                            </div>
+                            <div class="mood-option" data-mood="🤔" onclick="selectMood('🤔')">
+                                <div class="mood-emoji">🤔</div>
+                                <div class="mood-label">思考</div>
+                            </div>
+                            <div class="mood-option" data-mood="😎" onclick="selectMood('😎')">
+                                <div class="mood-emoji">😎</div>
+                                <div class="mood-label">酷</div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="mood" name="mood" value="😄">
+                    </div>
+
+                    <!-- Image Upload -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-image"></i>
+                            添加图片 (可选)
+                        </label>
+                        <div class="file-upload">
+                            <input type="file" 
+                                   id="image" 
+                                   name="image" 
+                                   class="file-input" 
+                                   accept="image/*"
+                                   onchange="previewImage(this)">
+                            <label for="image" class="file-label">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                                <span>点击选择图片或拖拽图片到这里</span>
+                            </label>
+                        </div>
+                        <div class="file-preview" id="imagePreview"></div>
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="form-actions">
+                        <a href="{% url 'content_generator:event_list' %}" class="btn btn-outline">
+                            <i class="fas fa-arrow-left"></i>
+                            返回日记列表
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            保存日记
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+            
+            // Set default mood selection
+            selectMood('😄');
+        });
+
+        // Mood Selection
+        function selectMood(mood) {
+            // Remove previous selection
+            document.querySelectorAll('.mood-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            document.querySelector(`[data-mood="${mood}"]`).classList.add('selected');
+            
+            // Update hidden input
+            document.getElementById('mood').value = mood;
+        }
+
+        // Image Preview
+        function previewImage(input) {
+            const preview = document.getElementById('imagePreview');
+            preview.innerHTML = '';
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Form Validation
+        document.getElementById('diaryForm').addEventListener('submit', function(e) {
+            const title = document.getElementById('title').value.trim();
+            const content = document.getElementById('content').value.trim();
+            
+            if (!title || !content) {
+                e.preventDefault();
+                alert('请填写标题和内容！');
+                return;
+            }
+            
+            if (title.length < 2) {
+                e.preventDefault();
+                alert('标题至少需要2个字符！');
+                return;
+            }
+            
+            if (content.length < 10) {
+                e.preventDefault();
+                alert('内容至少需要10个字符！');
+                return;
+            }
+        });
+
+        // Auto-resize textarea
+        document.getElementById('content').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+    </script>
+</body>
+</html>

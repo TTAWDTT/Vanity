@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加任务 - Vanity</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* 深色主题 */
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-sidebar: #0f0f23;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --blur-bg: rgba(22, 33, 62, 0.8);
+        }
+
+        [data-theme="light"] {
+            /* 浅色主题 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #f1f5f9;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --blur-bg: rgba(248, 250, 252, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px var(--shadow);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle .sun {
+            color: var(--warning);
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        .theme-toggle .moon {
+            color: var(--accent);
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .sun {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .moon {
+            opacity: 0;
+            transform: rotate(-180deg);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            z-index: 100;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
+            margin: 0.5rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent);
+            color: white;
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.6s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        .header {
+            background: var(--blur-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+
+        .content-area {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .form-card:hover {
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .form-control:hover {
+            border-color: var(--accent-light);
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+            padding-right: 2.5rem;
+        }
+
+        .emoji-selector {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .emoji-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.5rem;
+            background: var(--bg-primary);
+        }
+
+        .emoji-option:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            transform: scale(1.1);
+        }
+
+        .emoji-option.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+
+        .priority-selector {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .priority-option {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            background: var(--bg-primary);
+        }
+
+        .priority-option:hover {
+            border-color: var(--accent);
+            background: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .priority-option.selected {
+            border-color: var(--accent);
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            transform: translateY(-2px);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .bounce {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            80% { transform: translateY(-5px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="fade-in">
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-sun sun"></i>
+        <i class="fas fa-moon moon"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">Vanity</div>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item">
+                <a href="{% url 'content_generator:task_list' %}" class="nav-link active">
+                    <i class="fas fa-tasks"></i>
+                    <span>任务管理</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'content_generator:event_list' %}" class="nav-link">
+                    <i class="fas fa-calendar"></i>
+                    <span>事件记录</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'content_generator:daily_summary' %}" class="nav-link">
+                    <i class="fas fa-chart-line"></i>
+                    <span>日总结</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <div>
+                    <h1 class="page-title">添加任务</h1>
+                    <div class="breadcrumb">
+                        <a href="{% url 'content_generator:task_list' %}">任务管理</a>
+                        <i class="fas fa-chevron-right"></i>
+                        <span>添加任务</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <div class="form-card">
+                <form method="post" id="taskForm">
+                    {% csrf_token %}
+                    
+                    <div class="form-group">
+                        <label class="form-label" for="id_title">
+                            <i class="fas fa-tag"></i> 任务标题
+                        </label>
+                        <input type="text" name="title" id="id_title" class="form-control" 
+                               placeholder="输入任务标题..." required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_description">
+                            <i class="fas fa-align-left"></i> 任务描述
+                        </label>
+                        <textarea name="description" id="id_description" class="form-control" 
+                                  rows="4" placeholder="描述任务详情（可选）..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-flag"></i> 优先级
+                        </label>
+                        <div class="priority-selector">
+                            <div class="priority-option" data-value="low" title="低优先级">
+                                ♛
+                            </div>
+                            <div class="priority-option selected" data-value="medium" title="中优先级">
+                                ♛♛
+                            </div>
+                            <div class="priority-option" data-value="high" title="高优先级">
+                                ♛♛♛
+                            </div>
+                        </div>
+                        <input type="hidden" name="priority" id="id_priority" value="medium">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-smile"></i> 意愿度
+                        </label>
+                        <div class="emoji-selector">
+                            <div class="emoji-option" data-value="😭" title="很不情愿">😭</div>
+                            <div class="emoji-option" data-value="😕" title="不太情愿">😕</div>
+                            <div class="emoji-option selected" data-value="😐" title="一般">😐</div>
+                            <div class="emoji-option" data-value="🙂" title="比较愿意">🙂</div>
+                            <div class="emoji-option" data-value="😄" title="很愿意">😄</div>
+                        </div>
+                        <input type="hidden" name="willingness" id="id_willingness" value="😐">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="id_due_date">
+                            <i class="fas fa-clock"></i> 截止时间（可选）
+                        </label>
+                        <input type="datetime-local" name="due_date" id="id_due_date" class="form-control">
+                    </div>
+
+                    <div class="form-actions">
+                        <a href="{% url 'content_generator:task_list' %}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i>
+                            取消
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            添加任务
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Add bounce animation to toggle button
+            document.querySelector('.theme-toggle').classList.add('bounce');
+            setTimeout(() => {
+                document.querySelector('.theme-toggle').classList.remove('bounce');
+            }, 600);
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+        });
+
+        // Priority Selector
+        document.querySelectorAll('.priority-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.priority-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('id_priority').value = this.getAttribute('data-value');
+                
+                // Add bounce animation
+                this.classList.add('bounce');
+                setTimeout(() => this.classList.remove('bounce'), 600);
+            });
+        });
+
+        // Emoji Selector
+        document.querySelectorAll('.emoji-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.emoji-option').forEach(opt => opt.classList.remove('selected'));
+                this.classList.add('selected');
+                document.getElementById('id_willingness').value = this.getAttribute('data-value');
+                
+                // Add bounce animation
+                this.classList.add('bounce');
+                setTimeout(() => this.classList.remove('bounce'), 600);
+            });
+        });
+
+        // Form validation with animation
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            const title = document.getElementById('id_title').value.trim();
+            if (!title) {
+                e.preventDefault();
+                const titleField = document.getElementById('id_title');
+                titleField.focus();
+                titleField.style.borderColor = 'var(--danger)';
+                titleField.classList.add('bounce');
+                setTimeout(() => {
+                    titleField.style.borderColor = '';
+                    titleField.classList.remove('bounce');
+                }, 1000);
+            }
+        });
+
+        // Add focus animations
+        document.querySelectorAll('.form-control').forEach(field => {
+            field.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            field.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>

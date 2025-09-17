@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>日总结 - Vanity</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* 深色主题 */
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --bg-sidebar: #0f0f23;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.3);
+            --blur-bg: rgba(22, 33, 62, 0.8);
+        }
+
+        [data-theme="light"] {
+            /* 浅色主题 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-sidebar: #f1f5f9;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: rgba(0, 0, 0, 0.1);
+            --blur-bg: rgba(248, 250, 252, 0.9);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px var(--shadow);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle .sun {
+            color: var(--warning);
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        .theme-toggle .moon {
+            color: var(--accent);
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .sun {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .moon {
+            opacity: 0;
+            transform: rotate(-180deg);
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-sidebar);
+            border-right: 1px solid var(--border);
+            z-index: 100;
+            overflow-y: auto;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 2rem 1.5rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-menu {
+            padding: 1.5rem 0;
+        }
+
+        .nav-item {
+            margin: 0.5rem 1rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: var(--accent);
+            color: white;
+            transform: translateX(8px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.6s;
+        }
+
+        .nav-link:hover::before {
+            left: 100%;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            min-height: 100vh;
+            background: var(--bg-secondary);
+        }
+
+        .header {
+            background: var(--blur-bg);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 1.5rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--text-secondary);
+        }
+
+        .content-area {
+            padding: 2rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .summary-form {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            height: fit-content;
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+
+        .form-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            font-family: inherit;
+        }
+
+        .summary-panel {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px var(--shadow);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .progress-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent), var(--accent-light));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--bg-card);
+            transform: translateY(-2px);
+        }
+
+        .summary-list {
+            display: grid;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .summary-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 20px var(--shadow);
+            transition: all 0.3s ease;
+        }
+
+        .summary-item:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px var(--shadow);
+        }
+
+        .summary-date {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .summary-content {
+            color: var(--text-secondary);
+            line-height: 1.6;
+            margin-bottom: 1rem;
+        }
+
+        .summary-evaluation {
+            background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--accent);
+            padding: 1rem;
+            border-radius: 0 8px 8px 0;
+            color: var(--text-primary);
+            font-style: italic;
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid var(--border);
+            border-radius: 50%;
+            border-top-color: var(--accent);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Animation Classes */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .content-area {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-sun sun"></i>
+        <i class="fas fa-moon moon"></i>
+    </div>
+
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo">Vanity</div>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item">
+                <a href="{% url 'content_generator:task_list' %}" class="nav-link">
+                    <i class="fas fa-tasks"></i>
+                    <span>任务管理</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'content_generator:event_list' %}" class="nav-link">
+                    <i class="fas fa-book"></i>
+                    <span>日记</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'content_generator:daily_summary' %}" class="nav-link active">
+                    <i class="fas fa-chart-line"></i>
+                    <span>日总结</span>
+                </a>
+            </div>
+            <div class="nav-item">
+                <a href="{% url 'logout' %}" class="nav-link">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>退出登录</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="page-title">日总结</h1>
+                <div class="user-info">
+                    <i class="fas fa-user"></i>
+                    <span>{{ user.username }}</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-area">
+            <!-- Dashboard Grid -->
+            <div class="dashboard-grid">
+                <!-- Summary Form -->
+                <div class="summary-form slide-up">
+                    <h2 class="form-title">
+                        <i class="fas fa-plus-circle"></i>
+                        创建今日总结
+                    </h2>
+                    
+                    <form method="post" id="summaryForm">
+                        {% csrf_token %}
+                        
+                        <div class="form-group">
+                            <label for="date" class="form-label">
+                                <i class="fas fa-calendar"></i>
+                                日期
+                            </label>
+                            <input type="date" 
+                                   id="date" 
+                                   name="date" 
+                                   class="form-input" 
+                                   value="{{ today|date:'Y-m-d' }}"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="summary" class="form-label">
+                                <i class="fas fa-edit"></i>
+                                今日总结
+                            </label>
+                            <textarea id="summary" 
+                                      name="summary" 
+                                      class="form-textarea" 
+                                      placeholder="今天做了什么，有什么收获和感悟..."
+                                      required></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="work_evaluation" class="form-label">
+                                <i class="fas fa-star"></i>
+                                工作评估 (可选)
+                            </label>
+                            <textarea id="work_evaluation" 
+                                      name="work_evaluation" 
+                                      class="form-textarea" 
+                                      placeholder="对今天工作表现的评估和改进建议..."></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            保存总结
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Summary Panel -->
+                <div class="summary-panel slide-up">
+                    <h2 class="form-title">
+                        <i class="fas fa-chart-bar"></i>
+                        数据概览
+                    </h2>
+                    
+                    <!-- Stats Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" style="color: var(--accent);">{{ total_summaries }}</div>
+                            <div class="stat-label">总结数</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" style="color: var(--success);">{{ this_month_summaries }}</div>
+                            <div class="stat-label">本月</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" style="color: var(--warning);">{{ this_week_summaries }}</div>
+                            <div class="stat-label">本周</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" style="color: var(--danger);">{{ streak_days }}</div>
+                            <div class="stat-label">连续天数</div>
+                        </div>
+                    </div>
+
+                    <!-- Progress Cards -->
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <span class="progress-title">本月完成度</span>
+                            <span>{{ month_progress }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ month_progress }}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="progress-card">
+                        <div class="progress-header">
+                            <span class="progress-title">本周完成度</span>
+                            <span>{{ week_progress }}%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: {{ week_progress }}%"></div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-outline" onclick="generateAISummary()">
+                        <i class="fas fa-robot"></i>
+                        AI智能总结
+                    </button>
+                </div>
+            </div>
+
+            <!-- Recent Summaries -->
+            <div class="summary-list">
+                <h2 class="form-title">
+                    <i class="fas fa-history"></i>
+                    最近总结
+                </h2>
+                
+                {% for summary in summaries %}
+                <div class="summary-item slide-up">
+                    <div class="summary-date">
+                        <i class="fas fa-calendar-day"></i>
+                        {{ summary.date|date:"Y年m月d日" }}
+                    </div>
+                    <div class="summary-content">{{ summary.summary|truncatewords:50 }}</div>
+                    {% if summary.work_evaluation %}
+                    <div class="summary-evaluation">
+                        <strong>工作评估：</strong>{{ summary.work_evaluation|truncatewords:30 }}
+                    </div>
+                    {% endif %}
+                </div>
+                {% empty %}
+                <div class="summary-item">
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted);">
+                        <i class="fas fa-calendar-check" style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;"></i>
+                        <p>还没有任何总结记录，开始记录你的每一天吧！</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+        });
+
+        // Auto-resize textareas
+        document.querySelectorAll('.form-textarea').forEach(textarea => {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+        });
+
+        // Form validation
+        document.getElementById('summaryForm').addEventListener('submit', function(e) {
+            const summary = document.getElementById('summary').value.trim();
+            
+            if (summary.length < 10) {
+                e.preventDefault();
+                alert('总结内容至少需要10个字符！');
+                return;
+            }
+        });
+
+        // Generate AI Summary
+        function generateAISummary() {
+            const button = event.target.closest('button');
+            const originalText = button.innerHTML;
+            button.innerHTML = '<span class="loading"></span> 生成中...';
+            button.disabled = true;
+            
+            fetch('/content/summary/generate/', {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken')
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                
+                if (data.summary) {
+                    document.getElementById('summary').value = data.summary;
+                    if (data.work_evaluation) {
+                        document.getElementById('work_evaluation').value = data.work_evaluation;
+                    }
+                }
+            })
+            .catch(error => {
+                button.innerHTML = originalText;
+                button.disabled = false;
+                alert('生成失败，请稍后再试');
+            });
+        }
+
+        // Get CSRF token
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+
+        // Add entrance animations
+        document.addEventListener('DOMContentLoaded', function() {
+            const items = document.querySelectorAll('.slide-up');
+            items.forEach((item, index) => {
+                setTimeout(() => {
+                    item.classList.add('slide-up');
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
