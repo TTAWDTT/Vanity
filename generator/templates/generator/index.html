@@ -1,0 +1,188 @@
+{% extends 'generator/base.html' %}
+
+{% block title %}首页 - Vanity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🎨 Vanity</h1>
+    <p>AI驱动的社交媒体文案生成器</p>
+    <p class="text-muted">输入您的需求，获得5条专业定制的朋友圈文案</p>
+</div>
+
+<form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+    {% csrf_token %}
+    
+    <div class="row">
+        <!-- 左侧表单 -->
+        <div class="col-md-8">
+            <!-- 配图上传 -->
+            <div class="mb-4">
+                <label for="{{ form.image.id_for_label }}" class="form-label">
+                    📸 {{ form.image.label }}
+                    <span class="text-muted">(可选)</span>
+                </label>
+                {{ form.image }}
+                <div class="form-text">{{ form.image.help_text }}</div>
+            </div>
+            
+            <!-- 事件描述 -->
+            <div class="mb-4">
+                <label for="{{ form.event_description.id_for_label }}" class="form-label">
+                    📝 {{ form.event_description.label }}
+                    <span class="text-muted">(可选)</span>
+                </label>
+                {{ form.event_description }}
+                <div class="form-text">分享您想要表达的事件或感受</div>
+            </div>
+            
+            <!-- 内容风格 -->
+            <div class="mb-4">
+                <label for="{{ form.style.id_for_label }}" class="form-label">
+                    🎭 {{ form.style.label }}
+                    <span class="text-danger">*</span>
+                </label>
+                {{ form.style }}
+                <div class="form-text">选择最符合您期望的内容风格，这将影响文案的整体调性</div>
+            </div>
+            
+            <!-- 语言选择 -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <label for="{{ form.language.id_for_label }}" class="form-label">
+                        🌍 {{ form.language.label }}
+                    </label>
+                    {{ form.language }}
+                </div>
+                
+                <!-- 受众类型 -->
+                <div class="col-md-6">
+                    <label for="{{ form.audience_type.id_for_label }}" class="form-label">
+                        👥 {{ form.audience_type.label }}
+                        <span class="text-danger">*</span>
+                    </label>
+                    {{ form.audience_type }}
+                </div>
+            </div>
+            
+            <!-- 受众描述 -->
+            <div class="mb-4">
+                <label for="{{ form.audience_description.id_for_label }}" class="form-label">
+                    🎯 {{ form.audience_description.label }}
+                    <span class="text-danger">*</span>
+                </label>
+                {{ form.audience_description }}
+                <div class="form-text">详细描述您的目标受众，有助于生成更精准的内容</div>
+            </div>
+            
+            <!-- 补充说明 -->
+            <div class="mb-4">
+                <label for="{{ form.additional_notes.id_for_label }}" class="form-label">
+                    💡 {{ form.additional_notes.label }}
+                    <span class="text-muted">(可选)</span>
+                </label>
+                {{ form.additional_notes }}
+                <div class="form-text">任何其他要求或想法</div>
+            </div>
+            
+            <!-- 提交按钮 -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-primary btn-lg">
+                    ✨ 开始生成文案
+                </button>
+            </div>
+        </div>
+        
+        <!-- 右侧提示 -->
+        <div class="col-md-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">💡 使用提示</h5>
+                    
+                    <div class="mb-3">
+                        <h6>📋 填写建议：</h6>
+                        <ul class="list-unstyled">
+                            <li>• 风格选择最为重要</li>
+                            <li>• 详细描述您的受众</li>
+                            <li>• 事件描述越具体越好</li>
+                            <li>• 可上传相关图片</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <h6>🎨 风格说明：</h6>
+                        <small class="text-muted">
+                            <strong>轻松随意：</strong>日常分享<br>
+                            <strong>正式严肃：</strong>商务场合<br>
+                            <strong>幽默风趣：</strong>搞笑内容<br>
+                            <strong>深情感人：</strong>情感表达<br>
+                            <strong>励志向上：</strong>正能量<br>
+                            <strong>专业商务：</strong>职场分享<br>
+                            <strong>时尚潮流：</strong>年轻化表达<br>
+                            <strong>文艺清新：</strong>文学色彩<br>
+                            <strong>简约风格：</strong>简洁明了<br>
+                            <strong>戏剧化：</strong>夸张表达
+                        </small>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <small>
+                            <i class="bi bi-info-circle"></i>
+                            生成后您将获得5条不同的文案选择，可直接复制使用！
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // 文件上传预览
+    const imageInput = document.getElementById('{{ form.image.id_for_label }}');
+    if (imageInput) {
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // 可以在这里添加图片预览功能
+                    console.log('图片已选择:', file.name);
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // 字符计数器
+    const textareas = document.querySelectorAll('textarea');
+    textareas.forEach(function(textarea) {
+        const maxLength = textarea.getAttribute('maxlength');
+        if (maxLength) {
+            const counter = document.createElement('div');
+            counter.className = 'form-text text-end';
+            counter.innerHTML = `<span class="char-count">0</span>/${maxLength}`;
+            textarea.parentNode.appendChild(counter);
+            
+            const charCount = counter.querySelector('.char-count');
+            textarea.addEventListener('input', function() {
+                charCount.textContent = this.value.length;
+                if (this.value.length > maxLength * 0.9) {
+                    charCount.className = 'char-count text-warning';
+                } else {
+                    charCount.className = 'char-count';
+                }
+            });
+        }
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.char-count {
+    font-weight: 600;
+}
+</style>
+{% endblock %}

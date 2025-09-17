@@ -1,0 +1,166 @@
+{% extends 'generator/base.html' %}
+
+{% block title %}生成结果 - Vanity{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>🎉 生成完成！</h1>
+    <p>为您精心生成了5条{{ content_request.get_style_display }}风格的文案</p>
+</div>
+
+<!-- 请求信息摘要 -->
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">📋 您的需求</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <p><strong>内容风格：</strong>{{ content_request.get_style_display }}</p>
+                <p><strong>语言：</strong>{{ content_request.get_language_display }}</p>
+                <p><strong>受众类型：</strong>{{ content_request.audience_type }}</p>
+            </div>
+            <div class="col-md-6">
+                {% if content_request.image %}
+                <p><strong>配图：</strong>已上传</p>
+                <div class="mb-2">
+                    <img src="{{ content_request.image.url }}" alt="上传的图片" class="img-thumbnail" style="max-height: 100px;">
+                </div>
+                {% endif %}
+                {% if content_request.event_description %}
+                <p><strong>事件描述：</strong>{{ content_request.event_description|truncatechars:50 }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 生成的文案 -->
+<div class="mb-4">
+    <h3>✨ 为您生成的文案</h3>
+    <p class="text-muted">点击"复制"按钮可直接复制到剪贴板</p>
+</div>
+
+{% for text_item in generated_texts %}
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-start">
+            <div class="flex-grow-1">
+                <h6 class="card-subtitle mb-2 text-muted">文案选项 {{ text_item.id }}</h6>
+                <div class="text-content">
+                    <p class="mb-0">{{ text_item.content }}</p>
+                </div>
+            </div>
+            <button type="button" class="copy-btn ms-3" onclick="copyText('{{ text_item.content|addslashes }}')">
+                📋 复制
+            </button>
+        </div>
+    </div>
+</div>
+{% empty %}
+<div class="alert alert-warning">
+    <h5>⚠️ 没有生成的内容</h5>
+    <p>很抱歉，没有找到生成的文案内容。请返回重新生成。</p>
+</div>
+{% endfor %}
+
+<!-- 操作按钮 -->
+<div class="text-center mt-4">
+    <a href="{% url 'generator:index' %}" class="btn btn-primary me-3">
+        🔄 重新生成
+    </a>
+    <button type="button" class="btn btn-success" onclick="copyAllTexts()">
+        📋 复制全部文案
+    </button>
+</div>
+
+<!-- 使用建议 -->
+<div class="card mt-4">
+    <div class="card-body">
+        <h5 class="card-title">💡 使用建议</h5>
+        <div class="row">
+            <div class="col-md-6">
+                <h6>📝 发布技巧：</h6>
+                <ul class="list-unstyled">
+                    <li>• 根据不同平台调整内容</li>
+                    <li>• 可适当添加话题标签</li>
+                    <li>• 注意发布时间选择</li>
+                    <li>• 配合合适的图片效果更佳</li>
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h6>🎯 优化建议：</h6>
+                <ul class="list-unstyled">
+                    <li>• 可根据实际情况微调文案</li>
+                    <li>• 添加个人特色元素</li>
+                    <li>• 考虑受众的接受度</li>
+                    <li>• 保持内容的真实性</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 复制所有文案
+function copyAllTexts() {
+    const allTexts = [
+        {% for text_item in generated_texts %}
+        '{{ text_item.content|addslashes }}',
+        {% endfor %}
+    ];
+    
+    const allContent = allTexts.join('\n\n---\n\n');
+    
+    navigator.clipboard.writeText(allContent).then(function() {
+        const toast = document.createElement('div');
+        toast.className = 'alert alert-success position-fixed top-0 end-0 m-3';
+        toast.style.zIndex = '9999';
+        toast.innerHTML = '所有文案已复制到剪贴板！';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }).catch(function(err) {
+        console.error('复制失败: ', err);
+        alert('复制失败，请手动复制');
+    });
+}
+
+// 页面加载完成后的动画效果
+document.addEventListener('DOMContentLoaded', function() {
+    const cards = document.querySelectorAll('.card');
+    cards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(20px)';
+        setTimeout(() => {
+            card.style.transition = 'all 0.5s ease';
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+        }, index * 100);
+    });
+});
+</script>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.text-content {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    white-space: pre-wrap;
+}
+
+.copy-btn {
+    flex-shrink: 0;
+}
+</style>
+{% endblock %}
