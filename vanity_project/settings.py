@@ -35,6 +35,13 @@ if allowed_hosts_env:
 else:
     ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
+# Debugging aid: print resolved values so they appear in deployment logs (safe: does not print SECRET_KEY)
+try:
+    import sys
+    print(f"[settings] DEBUG={DEBUG} ALLOWED_HOSTS={ALLOWED_HOSTS}", file=sys.stdout)
+except Exception:
+    pass
+
 
 # Application definition
 
