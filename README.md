@@ -27,7 +27,7 @@ Vanity是一个基于Django的Web应用程序，帮助用户管理日常任务�
    cd Vanity
    ```
 
-2. 创建虚拟环境（可选但推荐）：
+2. 创建虚拟环境（可选但不推荐，python符合版本就没必要弄）：
    ```
    python -m venv venv
    source venv/bin/activate  # Linux/Mac
@@ -43,16 +43,6 @@ Vanity是一个基于Django的Web应用程序，帮助用户管理日常任务�
    ```
    python manage.py makemigrations
    python manage.py migrate
-   ```
-
-5. 创建媒体文件目录：
-   ```
-   mkdir media
-   ```
-
-6. 创建超级用户（可选，用于访问管理后台）：
-   ```
-   python manage.py createsuperuser
    ```
 
 ## 运行项目
@@ -98,7 +88,7 @@ Vanity/
 ### 任务管理
 1. 添加任务：点击"添加任务"按钮，填写任务标题、描述、优先级（!!!/!!/!）和意愿度（emoji）
 2. 任务操作：可以标记完成/未完成、编辑、删除任务
-3. LLM建议：点击"获取建议"按钮为任务获取AI建议
+3. LLM建议：点击"获取建议"按钮为任务获取AI建议（未实装）
 
 ### 事件记录
 1. 添加事件：点击"添加事件"按钮，填写事件标题、内容、心情（emoji）和上传图片
