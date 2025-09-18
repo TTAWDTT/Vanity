@@ -1,0 +1,248 @@
+{% extends "mobile_base.html" %}
+
+{% block title %}日总结 - Vanity{% endblock %}
+
+{% block content %}
+<!-- 统计卡片 -->
+<div class="mobile-stats-grid">
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-primary);">{{ total_summaries }}</div>
+        <div class="mobile-stat-label">总结数</div>
+    </div>
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-success);">{{ this_month_summaries }}</div>
+        <div class="mobile-stat-label">本月</div>
+    </div>
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-warning);">{{ this_week_summaries }}</div>
+        <div class="mobile-stat-label">本周</div>
+    </div>
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-danger);">{{ streak_days }}</div>
+        <div class="mobile-stat-label">连续天数</div>
+    </div>
+</div>
+
+<!-- 进度条 -->
+<div class="mobile-task-card" style="margin-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span style="font-size: 0.875rem; color: var(--mobile-text-light);">本月完成度</span>
+        <span style="font-size: 0.875rem; font-weight: 600;">{{ month_progress }}%</span>
+    </div>
+    <div style="height: 8px; background: var(--mobile-border); border-radius: 4px; overflow: hidden;">
+        <div style="height: 100%; background: var(--mobile-primary); border-radius: 4px; width: {{ month_progress }}%;"></div>
+    </div>
+</div>
+
+<div class="mobile-task-card" style="margin-bottom: 1rem;">
+    <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+        <span style="font-size: 0.875rem; color: var(--mobile-text-light);">本周完成度</span>
+        <span style="font-size: 0.875rem; font-weight: 600;">{{ week_progress }}%</span>
+    </div>
+    <div style="height: 8px; background: var(--mobile-border); border-radius: 4px; overflow: hidden;">
+        <div style="height: 100%; background: var(--mobile-secondary); border-radius: 4px; width: {{ week_progress }}%;"></div>
+    </div>
+</div>
+
+<!-- 总结表单 -->
+<div class="mobile-form">
+    <h2 class="mobile-form-title">📝 创建今日总结</h2>
+    
+    <form method="post" id="summaryForm">
+        {% csrf_token %}
+        
+        <div class="mobile-form-group">
+            <label for="date" class="mobile-form-label">📅 日期</label>
+            <input type="date" 
+                   id="date" 
+                   name="date" 
+                   class="mobile-form-input" 
+                   value="{{ today|date:'Y-m-d' }}"
+                   required>
+        </div>
+
+        <div class="mobile-form-group">
+            <label for="summary" class="mobile-form-label">✍️ 今日总结</label>
+            <textarea id="summary" 
+                      name="summary" 
+                      class="mobile-form-textarea" 
+                      placeholder="今天做了什么，有什么收获和感悟..."
+                      required></textarea>
+        </div>
+
+        <div class="mobile-form-group">
+            <label for="work_evaluation" class="mobile-form-label">⭐ 工作评估 (可选)</label>
+            <textarea id="work_evaluation" 
+                      name="work_evaluation" 
+                      class="mobile-form-textarea" 
+                      placeholder="对今天工作表现的评估和改进建议..."></textarea>
+        </div>
+
+        <button type="submit" class="mobile-submit-btn">
+            <i class="fas fa-save"></i> 保存总结
+        </button>
+    </form>
+</div>
+
+<!-- AI智能总结按钮 -->
+<div class="mobile-task-card" style="margin-top: 1rem; text-align: center;">
+    <button class="mobile-submit-btn" onclick="generateAISummary()" style="background: linear-gradient(135deg, var(--mobile-accent), #f72585);">
+        <i class="fas fa-robot"></i> AI智能总结
+    </button>
+</div>
+
+<!-- 最近总结 -->
+{% if summaries %}
+<div style="margin-top: 2rem;">
+    <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: 1rem; color: var(--mobile-text);">📚 最近总结</h3>
+    
+    {% for summary in summaries %}
+    <div class="mobile-task-card" style="margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+            <span style="font-weight: 600; color: var(--mobile-primary);">
+                <i class="fas fa-calendar-day"></i> {{ summary.date|date:"Y年m月d日" }}
+            </span>
+        </div>
+        <div style="color: var(--mobile-text-light); margin-bottom: 0.5rem; line-height: 1.5;">
+            {{ summary.summary|truncatewords:30 }}
+        </div>
+        {% if summary.work_evaluation %}
+        <div style="background: rgba(67, 97, 238, 0.1); border-left: 3px solid var(--mobile-primary); padding: 0.75rem; border-radius: 0 8px 8px 0; color: var(--mobile-text); font-size: 0.875rem;">
+            <strong>工作评估：</strong>{{ summary.work_evaluation|truncatewords:20 }}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 自动生成AI总结
+function generateAISummary() {
+    const button = event.target.closest('button');
+    const originalText = button.innerHTML;
+    button.innerHTML = '<span class="loading"></span> 生成中...';
+    button.disabled = true;
+    
+    fetch('/content/summary/generate/', {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        if (data.summary) {
+            document.getElementById('summary').value = data.summary;
+            if (data.work_evaluation) {
+                document.getElementById('work_evaluation').value = data.work_evaluation;
+            }
+            showToast('✅ AI总结生成成功');
+        }
+    })
+    .catch(error => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        showToast('❌ 生成失败，请稍后再试');
+    });
+}
+
+// 获取CSRF token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// 表单验证
+document.getElementById('summaryForm').addEventListener('submit', function(e) {
+    const summary = document.getElementById('summary').value.trim();
+    
+    if (summary.length < 10) {
+        e.preventDefault();
+        showToast('❌ 总结内容至少需要10个字符！');
+        return;
+    }
+});
+
+// 自动调整文本域高度
+document.querySelectorAll('.mobile-form-textarea').forEach(textarea => {
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+    });
+});
+
+// Toast消息显示
+function showToast(message) {
+    const existingToast = document.getElementById('mobileToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.id = 'mobileToast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 20px) + 80px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--mobile-text);
+        color: var(--mobile-card);
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: var(--mobile-shadow);
+        animation: slideUp 0.3s ease-out;
+        max-width: calc(100vw - 2rem);
+        text-align: center;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }, 3000);
+}
+
+// Loading动画
+const loading = document.createElement('style');
+loading.textContent = `
+    .loading {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid var(--mobile-border);
+        border-radius: 50%;
+        border-top-color: var(--mobile-primary);
+        animation: spin 1s ease-in-out infinite;
+    }
+    
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+`;
+document.head.appendChild(loading);
+</script>
+{% endblock %}

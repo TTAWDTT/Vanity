@@ -1,0 +1,270 @@
+{% extends "mobile_base.html" %}
+
+{% block title %}写日记 - Vanity{% endblock %}
+
+{% block content %}
+<div class="mobile-form">
+    <h2 class="mobile-form-title">📖 写日记</h2>
+    
+    <form method="post" enctype="multipart/form-data" id="diaryForm">
+        {% csrf_token %}
+        
+        <div class="mobile-form-group">
+            <label for="title" class="mobile-form-label">📝 日记标题</label>
+            <input type="text" 
+                   id="title" 
+                   name="title" 
+                   class="mobile-form-input" 
+                   placeholder="今天发生了什么特别的事情？"
+                   required
+                   maxlength="200">
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="content" class="mobile-form-label">📄 日记内容</label>
+            <textarea id="content" 
+                      name="content" 
+                      class="mobile-form-textarea" 
+                      placeholder="记录下今天的感受、想法或者有意思的事情..."
+                      required></textarea>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label class="mobile-form-label">😊 今天的心情</label>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                <label class="willingness-option" for="m1">
+                    <input type="radio" id="m1" name="mood" value="😄" style="display: none;" checked>
+                    <div class="willingness-button active">😄</div>
+                    <div class="willingness-label">开心</div>
+                </label>
+                <label class="willingness-option" for="m2">
+                    <input type="radio" id="m2" name="mood" value="😢" style="display: none;">
+                    <div class="willingness-button">😢</div>
+                    <div class="willingness-label">悲伤</div>
+                </label>
+                <label class="willingness-option" for="m3">
+                    <input type="radio" id="m3" name="mood" value="😠" style="display: none;">
+                    <div class="willingness-button">😠</div>
+                    <div class="willingness-label">愤怒</div>
+                </label>
+                <label class="willingness-option" for="m4">
+                    <input type="radio" id="m4" name="mood" value="😲" style="display: none;">
+                    <div class="willingness-button">😲</div>
+                    <div class="willingness-label">惊讶</div>
+                </label>
+                <label class="willingness-option" for="m5">
+                    <input type="radio" id="m5" name="mood" value="😴" style="display: none;">
+                    <div class="willingness-button">😴</div>
+                    <div class="willingness-label">困倦</div>
+                </label>
+                <label class="willingness-option" for="m6">
+                    <input type="radio" id="m6" name="mood" value="😍" style="display: none;">
+                    <div class="willingness-button">😍</div>
+                    <div class="willingness-label">兴奋</div>
+                </label>
+                <label class="willingness-option" for="m7">
+                    <input type="radio" id="m7" name="mood" value="🤔" style="display: none;">
+                    <div class="willingness-button">🤔</div>
+                    <div class="willingness-label">思考</div>
+                </label>
+                <label class="willingness-option" for="m8">
+                    <input type="radio" id="m8" name="mood" value="😎" style="display: none;">
+                    <div class="willingness-button">😎</div>
+                    <div class="willingness-label">酷</div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label class="mobile-form-label">🖼️ 添加图片 (可选)</label>
+            <input type="file" 
+                   id="image" 
+                   name="image" 
+                   class="mobile-form-input"
+                   accept="image/*">
+            <div id="imagePreview" style="margin-top: 1rem;"></div>
+        </div>
+        
+        <button type="submit" class="mobile-submit-btn" id="submitBtn">
+            <span id="submitText">✅ 保存日记</span>
+            <span id="submitSpinner" style="display: none;">🔄 保存中...</span>
+        </button>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.willingness-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.willingness-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    border: 2px solid var(--mobile-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: var(--mobile-card);
+    transition: all 0.2s ease;
+    margin-bottom: 0.25rem;
+}
+
+.willingness-button:active {
+    transform: scale(0.95);
+}
+
+.willingness-button.active {
+    border-color: var(--mobile-primary);
+    background: rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.willingness-label {
+    font-size: 0.75rem;
+    color: var(--mobile-text-light);
+    text-align: center;
+    line-height: 1.2;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 心情选择
+document.querySelectorAll('input[name="mood"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // 移除所有active状态
+        document.querySelectorAll('.willingness-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // 添加active到选中项
+        this.nextElementSibling.classList.add('active');
+    });
+});
+
+// 图片预览
+document.getElementById('image').addEventListener('change', function(e) {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    
+    if (this.files && this.files[0]) {
+        const file = this.files[0];
+        if (!file.type.match('image.*')) {
+            alert('请选择图片文件');
+            this.value = '';
+            return;
+        }
+        
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const img = document.createElement('img');
+            img.src = e.target.result;
+            img.style.maxWidth = '100%';
+            img.style.borderRadius = '8px';
+            img.style.boxShadow = 'var(--mobile-shadow)';
+            preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 表单提交处理
+document.getElementById('diaryForm').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
+    
+    // 显示加载状态
+    submitText.style.display = 'none';
+    submitSpinner.style.display = 'inline';
+    submitBtn.disabled = true;
+    
+    // 验证表单
+    const title = document.getElementById('title').value.trim();
+    const content = document.getElementById('content').value.trim();
+    
+    if (!title || !content) {
+        e.preventDefault();
+        showToast('❌ 请填写标题和内容');
+        
+        // 恢复按钮状态
+        submitText.style.display = 'inline';
+        submitSpinner.style.display = 'none';
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    if (title.length < 2) {
+        e.preventDefault();
+        showToast('❌ 标题至少需要2个字符');
+        
+        // 恢复按钮状态
+        submitText.style.display = 'inline';
+        submitSpinner.style.display = 'none';
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    if (content.length < 10) {
+        e.preventDefault();
+        showToast('❌ 内容至少需要10个字符');
+        
+        // 恢复按钮状态
+        submitText.style.display = 'inline';
+        submitSpinner.style.display = 'none';
+        submitBtn.disabled = false;
+        return;
+    }
+    
+    // 显示成功消息
+    showToast('✅ 正在保存日记...');
+});
+
+// Toast消息显示
+function showToast(message) {
+    const existingToast = document.getElementById('mobileToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.id = 'mobileToast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 20px) + 80px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--mobile-text);
+        color: var(--mobile-card);
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: var(--mobile-shadow);
+        animation: slideUp 0.3s ease-out;
+        max-width: calc(100vw - 2rem);
+        text-align: center;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

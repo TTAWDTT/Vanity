@@ -1,0 +1,165 @@
+{% extends "mobile_base.html" %}
+
+{% block title %}日记 - Vanity{% endblock %}
+
+{% block content %}
+<!-- 统计卡片 -->
+<div class="mobile-stats-grid">
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-primary);">{{ total_events }}</div>
+        <div class="mobile-stat-label">总记录</div>
+    </div>
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-success);">{{ this_month_events }}</div>
+        <div class="mobile-stat-label">本月</div>
+    </div>
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-warning);">{{ this_week_events }}</div>
+        <div class="mobile-stat-label">本周</div>
+    </div>
+    <div class="mobile-stat-card">
+        <div class="mobile-stat-number" style="color: var(--mobile-danger);">{{ today_events }}</div>
+        <div class="mobile-stat-label">今日</div>
+    </div>
+</div>
+
+<!-- 快速操作 -->
+<div class="mobile-quick-actions">
+    <a href="{% url 'content_generator:add_event' %}" class="mobile-quick-btn primary">
+        <span>➕</span>
+        <span>写日记</span>
+    </a>
+    <button class="mobile-quick-btn" onclick="filterByMood('all')">全部</button>
+    <div style="display: flex; gap: 0.25rem;">
+        <button class="mobile-quick-btn" onclick="filterByMood('😄')" title="开心">😄</button>
+        <button class="mobile-quick-btn" onclick="filterByMood('😢')" title="悲伤">😢</button>
+        <button class="mobile-quick-btn" onclick="filterByMood('😠')" title="愤怒">😠</button>
+        <button class="mobile-quick-btn" onclick="filterByMood('😲')" title="惊讶">😲</button>
+    </div>
+</div>
+
+<!-- 日记列表 -->
+<div class="mobile-task-list" id="eventList">
+    {% for event in events %}
+    <div class="mobile-task-card slide-up" data-mood="{{ event.mood }}">
+        <div class="mobile-task-header">
+            <h3 class="mobile-task-title">{{ event.title }}</h3>
+            <div class="mobile-task-priority" title="心情">{{ event.mood }}</div>
+        </div>
+        
+        <div class="mobile-task-meta">
+            <div title="创建时间">📅 {{ event.created_at|date:"m月d日 H:i" }}</div>
+        </div>
+        
+        <div class="mobile-task-description">
+            {{ event.content|truncatechars:100 }}
+        </div>
+        
+        {% if event.image %}
+        <div style="margin: 1rem 0;">
+            <img src="{{ event.image.url }}" alt="日记图片" 
+                 style="max-width: 100%; border-radius: 8px; box-shadow: 0 4px 8px var(--mobile-shadow);">
+        </div>
+        {% endif %}
+        
+        <div class="mobile-task-actions">
+            <button class="mobile-action-btn" data-action="generate" data-event-id="{{ event.id }}" title="生成内容">
+                <i class="fas fa-magic"></i> 生成
+            </button>
+        </div>
+    </div>
+    {% empty %}
+    <!-- 空状态 -->
+    <div class="mobile-empty-state">
+        <div class="mobile-empty-icon">📖</div>
+        <div class="mobile-empty-title">还没有日记记录</div>
+        <div class="mobile-empty-description">点击"写日记"开始记录生活点滴吧！</div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 心情筛选功能
+function filterByMood(mood) {
+    const events = document.querySelectorAll('.mobile-task-card[data-mood]');
+    const buttons = document.querySelectorAll('.mobile-quick-btn');
+    
+    // 更新按钮状态
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    // 筛选日记
+    events.forEach(event => {
+        if (mood === 'all' || event.getAttribute('data-mood') === mood) {
+            event.style.display = 'block';
+            event.classList.add('slide-up');
+        } else {
+            event.style.display = 'none';
+        }
+    });
+}
+
+// 生成内容
+function generateContent(eventId, button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = '<span class="loading"></span> 生成中...';
+    button.disabled = true;
+    
+    fetch(`/content/generate-content/${eventId}/`, {
+        method: 'POST',
+        headers: {
+            'X-CSRFToken': getCookie('csrftoken')
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        button.innerHTML = originalText;
+        button.disabled = false;
+        
+        if (data.content) {
+            alert(data.content);
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        button.innerHTML = originalText;
+        button.disabled = false;
+        alert('生成内容时出错，请重试');
+    });
+}
+
+// 获取CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// 事件委托处理按钮点击
+document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('click', function(e) {
+        const action = e.target.closest('button')?.getAttribute('data-action');
+        const eventId = e.target.closest('button')?.getAttribute('data-event-id');
+        
+        if (action && eventId) {
+            switch(action) {
+                case 'generate':
+                    generateContent(eventId, e.target.closest('button'));
+                    break;
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

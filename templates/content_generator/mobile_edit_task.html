@@ -1,0 +1,290 @@
+{% extends "mobile_base.html" %}
+
+{% block title %}编辑任务 - Vanity{% endblock %}
+
+{% block content %}
+<div class="mobile-form">
+    <h2 class="mobile-form-title">✏️ 编辑任务</h2>
+    
+    <form method="post" id="taskForm">
+        {% csrf_token %}
+        
+        <div class="mobile-form-group">
+            <label for="title" class="mobile-form-label">📝 任务标题</label>
+            <input type="text" 
+                   id="title" 
+                   name="title" 
+                   class="mobile-form-input" 
+                   value="{{ task.title }}"
+                   placeholder="输入任务标题..."
+                   required
+                   maxlength="200">
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="description" class="mobile-form-label">📄 任务描述（可选）</label>
+            <textarea id="description" 
+                      name="description" 
+                      class="mobile-form-textarea" 
+                      placeholder="描述任务详情，帮助你更好地完成任务...">{{ task.description|default:'' }}</textarea>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label class="mobile-form-label">🏆 优先级</label>
+            <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                <label class="priority-option {% if task.priority == 'low' %}selected{% endif %}" data-value="low">
+                    <input type="radio" name="priority" value="low" style="display: none;" {% if task.priority == 'low' %}checked{% endif %}>
+                    <div class="priority-button">♛</div>
+                    <div class="priority-label">低</div>
+                </label>
+                <label class="priority-option {% if task.priority == 'medium' %}selected{% endif %}" data-value="medium">
+                    <input type="radio" name="priority" value="medium" style="display: none;" {% if task.priority == 'medium' %}checked{% endif %}>
+                    <div class="priority-button">♛♛</div>
+                    <div class="priority-label">中</div>
+                </label>
+                <label class="priority-option {% if task.priority == 'high' %}selected{% endif %}" data-value="high">
+                    <input type="radio" name="priority" value="high" style="display: none;" {% if task.priority == 'high' %}checked{% endif %}>
+                    <div class="priority-button">♛♛♛</div>
+                    <div class="priority-label">高</div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label class="mobile-form-label">😊 意愿度</label>
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                <label class="willingness-option {% if task.willingness == '😭' %}selected{% endif %}">
+                    <input type="radio" name="willingness" value="😭" style="display: none;" {% if task.willingness == '😭' %}checked{% endif %}>
+                    <div class="willingness-button">😭</div>
+                    <div class="willingness-label">很不情愿</div>
+                </label>
+                <label class="willingness-option {% if task.willingness == '😕' %}selected{% endif %}">
+                    <input type="radio" name="willingness" value="😕" style="display: none;" {% if task.willingness == '😕' %}checked{% endif %}>
+                    <div class="willingness-button">😕</div>
+                    <div class="willingness-label">不太情愿</div>
+                </label>
+                <label class="willingness-option {% if task.willingness == '😐' %}selected{% endif %}">
+                    <input type="radio" name="willingness" value="😐" style="display: none;" {% if task.willingness == '😐' %}checked{% endif %}>
+                    <div class="willingness-button">😐</div>
+                    <div class="willingness-label">一般</div>
+                </label>
+                <label class="willingness-option {% if task.willingness == '🙂' %}selected{% endif %}">
+                    <input type="radio" name="willingness" value="🙂" style="display: none;" {% if task.willingness == '🙂' %}checked{% endif %}>
+                    <div class="willingness-button">🙂</div>
+                    <div class="willingness-label">比较愿意</div>
+                </label>
+                <label class="willingness-option {% if task.willingness == '😄' %}selected{% endif %}">
+                    <input type="radio" name="willingness" value="😄" style="display: none;" {% if task.willingness == '😄' %}checked{% endif %}>
+                    <div class="willingness-button">😄</div>
+                    <div class="willingness-label">很愿意</div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="due_date" class="mobile-form-label">📅 截止日期（可选）</label>
+            <input type="datetime-local" 
+                   id="due_date" 
+                   name="due_date" 
+                   class="mobile-form-input"
+                   value="{% if task.due_date %}{{ task.due_date|date:'Y-m-d\\TH:i' }}{% endif %}">
+        </div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-top: 2rem;">
+            <a href="{% url 'content_generator:task_list' %}" class="mobile-action-btn" style="text-align: center; text-decoration: none;">
+                取消
+            </a>
+            <button type="submit" class="mobile-submit-btn">
+                保存更改
+            </button>
+        </div>
+    </form>
+    
+    <!-- 危险操作区 -->
+    <div class="mobile-task-card" style="margin-top: 2rem; border: 1px solid var(--mobile-danger);">
+        <h3 style="color: var(--mobile-danger); margin-bottom: 1rem; font-size: 1.125rem;">
+            <i class="fas fa-exclamation-triangle"></i> 危险操作
+        </h3>
+        <p style="color: var(--mobile-text-light); margin-bottom: 1rem; font-size: 0.875rem;">
+            删除任务是不可逆的操作，请谨慎操作。
+        </p>
+        <button class="mobile-action-btn danger" onclick="confirmDelete()" style="width: 100%;">
+            删除任务
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.priority-option, .willingness-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.priority-button, .willingness-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    border: 2px solid var(--mobile-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: var(--mobile-card);
+    transition: all 0.2s ease;
+    margin-bottom: 0.25rem;
+}
+
+.priority-button:active, .willingness-button:active {
+    transform: scale(0.95);
+}
+
+.priority-option.selected .priority-button,
+.willingness-option.selected .willingness-button {
+    border-color: var(--mobile-primary);
+    background: rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.priority-label, .willingness-label {
+    font-size: 0.75rem;
+    color: var(--mobile-text-light);
+    text-align: center;
+    line-height: 1.2;
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 优先级选择
+document.querySelectorAll('.priority-option input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // 移除所有selected状态
+        document.querySelectorAll('.priority-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // 添加selected到选中项的父元素
+        this.closest('.priority-option').classList.add('selected');
+    });
+});
+
+// 意愿度选择
+document.querySelectorAll('.willingness-option input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // 移除所有selected状态
+        document.querySelectorAll('.willingness-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // 添加selected到选中项的父元素
+        this.closest('.willingness-option').classList.add('selected');
+    });
+});
+
+// 表单验证
+document.getElementById('taskForm').addEventListener('submit', function(e) {
+    const title = document.getElementById('title').value.trim();
+    
+    if (!title) {
+        e.preventDefault();
+        showToast('❌ 请输入任务标题');
+        document.getElementById('title').focus();
+        return;
+    }
+    
+    showToast('✅ 正在保存任务...');
+});
+
+// 删除确认
+function confirmDelete() {
+    if (confirm('确定要删除这个任务吗？此操作不可撤销。')) {
+        fetch('{% url "content_generator:delete_task" task.id %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(response => {
+            if (response.ok) {
+                showToast('🗑️ 任务已删除');
+                setTimeout(() => {
+                    window.location.href = '{% url "content_generator:task_list" %}';
+                }, 1000);
+            } else {
+                showToast('❌ 删除失败，请重试');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            showToast('❌ 网络错误，请重试');
+        });
+    }
+}
+
+// 获取CSRF Token
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// 自动调整文本域高度
+document.getElementById('description').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = (this.scrollHeight) + 'px';
+});
+
+// Toast消息显示
+function showToast(message) {
+    const existingToast = document.getElementById('mobileToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.id = 'mobileToast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 20px) + 80px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--mobile-text);
+        color: var(--mobile-card);
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: var(--mobile-shadow);
+        animation: slideUp 0.3s ease-out;
+        max-width: calc(100vw - 2rem);
+        text-align: center;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }, 3000);
+}
+</script>
+{% endblock %}

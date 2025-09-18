@@ -6,19 +6,15 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Task, Event, DailySummary, LLMAdvice
 from .forms import TaskForm, EventForm
+from ..utils import is_mobile_device
 import json
 import logging
-import re
 
 logger = logging.getLogger(__name__)
 
 def is_mobile(request):
     """检测是否为移动端设备"""
-    user_agent = request.META.get('HTTP_USER_AGENT', '')
-    mobile_pattern = re.compile(
-        r'(iPhone|iPod|iPad|Android|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|Mobi)'
-    )
-    return bool(mobile_pattern.search(user_agent))
+    return is_mobile_device(request)
 
 @login_required
 def task_list(request):
@@ -117,7 +113,9 @@ def edit_task(request, task_id):
     else:
         form = TaskForm(instance=task)
     
-    return render(request, 'content_generator/edit_task.html', {'form': form, 'task': task})
+    # 根据设备类型选择模板
+    template_name = 'content_generator/mobile_edit_task.html' if is_mobile(request) else 'content_generator/edit_task.html'
+    return render(request, template_name, {'form': form, 'task': task})
 
 @login_required
 def delete_task(request, task_id):
@@ -176,7 +174,9 @@ def event_list(request):
         'happy_events': happy_events
     }
     
-    return render(request, 'content_generator/event_list.html', context)
+    # 根据设备类型选择模板
+    template_name = 'content_generator/mobile_event_list.html' if is_mobile(request) else 'content_generator/event_list.html'
+    return render(request, template_name, context)
 
 @login_required
 def add_event(request):
@@ -194,7 +194,9 @@ def add_event(request):
     else:
         form = EventForm()
     
-    return render(request, 'content_generator/add_event.html', {'form': form})
+    # 根据设备类型选择模板
+    template_name = 'content_generator/mobile_add_event.html' if is_mobile(request) else 'content_generator/add_event.html'
+    return render(request, template_name, {'form': form})
 
 @login_required
 def daily_summary(request):
@@ -269,7 +271,9 @@ def daily_summary(request):
         'week_progress': min(week_progress, 100),
     }
     
-    return render(request, 'content_generator/daily_summary.html', context)
+    # 根据设备类型选择模板
+    template_name = 'content_generator/mobile_daily_summary.html' if is_mobile(request) else 'content_generator/daily_summary.html'
+    return render(request, template_name, context)
 
 @login_required
 def generate_daily_summary(request):

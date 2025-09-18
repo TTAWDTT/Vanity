@@ -3,16 +3,14 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from .utils import is_mobile_device
 
 def home(request):
     """
     主页视图 - 检测设备类型并返回适当的模板
     """
     # 检测是否为移动设备
-    user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
-    is_mobile = any(device in user_agent for device in [
-        'mobile', 'android', 'iphone', 'ipod', 'blackberry', 'windows phone'
-    ])
+    is_mobile = is_mobile_device(request)
     
     # 如果用户已登录且不是移动设备，重定向到任务列表
     if request.user.is_authenticated and not is_mobile:
