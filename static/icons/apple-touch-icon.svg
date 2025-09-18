@@ -1,0 +1,22 @@
+<svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Apple图标不使用圆角，系统会自动添加 -->
+  <rect width="180" height="180" fill="url(#gradient)"/>
+  
+  <!-- 主要图标 - V字形 -->
+  <path d="M45 60 L90 120 L135 60" stroke="white" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- 装饰性元素 -->
+  <circle cx="67.5" cy="90" r="3.5" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="112.5" cy="90" r="3.5" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="90" cy="135" r="5" fill="rgba(255,255,255,0.8)"/>
+  
+  <!-- 标题 -->
+  <text x="90" y="158" text-anchor="middle" fill="white" font-family="Inter, sans-serif" font-size="14" font-weight="600">VANITY</text>
+</svg>

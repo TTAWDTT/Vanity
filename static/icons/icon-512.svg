@@ -1,0 +1,27 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- 背景圆角矩形 -->
+  <rect width="512" height="512" rx="112" fill="url(#gradient)"/>
+  
+  <!-- 主要图标 - V字形 -->
+  <path d="M128 170 L256 342 L384 170" stroke="white" stroke-width="20" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- 装饰性元素 -->
+  <circle cx="192" cy="256" r="10" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="320" cy="256" r="10" fill="rgba(255,255,255,0.6)"/>
+  <circle cx="256" cy="384" r="16" fill="rgba(255,255,255,0.8)"/>
+  
+  <!-- 任务管理相关图标 -->
+  <rect x="200" y="120" width="112" height="16" rx="8" fill="rgba(255,255,255,0.4)"/>
+  <rect x="220" y="144" width="72" height="12" rx="6" fill="rgba(255,255,255,0.3)"/>
+  
+  <!-- 标题 -->
+  <text x="256" y="448" text-anchor="middle" fill="white" font-family="Inter, sans-serif" font-size="42" font-weight="600">VANITY</text>
+  <text x="256" y="480" text-anchor="middle" fill="rgba(255,255,255,0.8)" font-family="Inter, sans-serif" font-size="24" font-weight="400">任务管理</text>
+</svg>

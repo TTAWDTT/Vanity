@@ -1,0 +1,582 @@
+/* 移动端专用样式 - 针对竖屏布局优化 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    /* 移动端色彩方案 */
+    --mobile-primary: #667eea;
+    --mobile-secondary: #764ba2;
+    --mobile-accent: #f093fb;
+    --mobile-bg: #f8fafc;
+    --mobile-card: #ffffff;
+    --mobile-text: #2d3748;
+    --mobile-text-light: #718096;
+    --mobile-border: #e2e8f0;
+    --mobile-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --mobile-success: #48bb78;
+    --mobile-warning: #ed8936;
+    --mobile-danger: #f56565;
+    
+    /* 深色主题 */
+    --mobile-dark-bg: #1a202c;
+    --mobile-dark-card: #2d3748;
+    --mobile-dark-text: #f7fafc;
+    --mobile-dark-border: #4a5568;
+}
+
+/* 全局重置和基础样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--mobile-bg);
+    color: var(--mobile-text);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+/* 移动端容器 */
+.mobile-container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    max-width: 100vw;
+    overflow-x: hidden;
+}
+
+/* 顶部状态栏 */
+.mobile-status-bar {
+    height: env(safe-area-inset-top, 20px);
+    background: linear-gradient(135deg, var(--mobile-primary), var(--mobile-secondary));
+}
+
+/* 头部导航 */
+.mobile-header {
+    background: linear-gradient(135deg, var(--mobile-primary), var(--mobile-secondary));
+    color: white;
+    padding: 1rem;
+    padding-top: calc(1rem + env(safe-area-inset-top, 0px));
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--mobile-shadow);
+}
+
+.mobile-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.mobile-logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: linear-gradient(45deg, #fff, var(--mobile-accent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mobile-menu-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background 0.3s ease;
+}
+
+.mobile-menu-btn:active {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* 主要内容区域 */
+.mobile-main {
+    flex: 1;
+    padding: 1rem;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
+}
+
+/* 统计卡片网格 */
+.mobile-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.mobile-stat-card {
+    background: var(--mobile-card);
+    border-radius: 16px;
+    padding: 1.25rem;
+    text-align: center;
+    box-shadow: var(--mobile-shadow);
+    border: 1px solid var(--mobile-border);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-stat-card:active {
+    transform: scale(0.98);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+    background: linear-gradient(135deg, var(--mobile-primary), var(--mobile-secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.mobile-stat-label {
+    font-size: 0.875rem;
+    color: var(--mobile-text-light);
+    font-weight: 500;
+}
+
+/* 快速操作按钮 */
+.mobile-quick-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding: 0.25rem 0;
+}
+
+.mobile-quick-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--mobile-card);
+    border: 1px solid var(--mobile-border);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mobile-text);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+    box-shadow: var(--mobile-shadow);
+}
+
+.mobile-quick-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-quick-btn.primary {
+    background: linear-gradient(135deg, var(--mobile-primary), var(--mobile-secondary));
+    color: white;
+    border: none;
+}
+
+/* 任务卡片 */
+.mobile-task-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.mobile-task-card {
+    background: var(--mobile-card);
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: var(--mobile-shadow);
+    border: 1px solid var(--mobile-border);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.mobile-task-card:active {
+    transform: scale(0.98);
+}
+
+.mobile-task-card.completed {
+    opacity: 0.7;
+    background: linear-gradient(135deg, rgba(72, 187, 120, 0.1), rgba(72, 187, 120, 0.05));
+    border-left: 4px solid var(--mobile-success);
+}
+
+.mobile-task-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+}
+
+.mobile-task-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--mobile-text);
+    line-height: 1.4;
+    flex: 1;
+    margin-right: 0.5rem;
+}
+
+.mobile-task-priority {
+    font-size: 1.25rem;
+    padding: 0.25rem;
+}
+
+.mobile-task-meta {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 0.75rem;
+    font-size: 0.875rem;
+    color: var(--mobile-text-light);
+}
+
+.mobile-task-willingness {
+    font-size: 1.5rem;
+}
+
+.mobile-task-description {
+    color: var(--mobile-text-light);
+    font-size: 0.875rem;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+}
+
+.mobile-task-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.mobile-action-btn {
+    background: none;
+    border: 1px solid var(--mobile-border);
+    border-radius: 8px;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mobile-text);
+    transition: all 0.2s ease;
+    min-width: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mobile-action-btn:active {
+    transform: scale(0.95);
+}
+
+.mobile-action-btn.success {
+    background: var(--mobile-success);
+    color: white;
+    border: none;
+}
+
+.mobile-action-btn.danger {
+    background: var(--mobile-danger);
+    color: white;
+    border: none;
+}
+
+/* 底部导航栏 */
+.mobile-bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--mobile-card);
+    border-top: 1px solid var(--mobile-border);
+    padding: 0.75rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    justify-content: space-around;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    color: var(--mobile-text-light);
+    font-size: 0.75rem;
+    font-weight: 500;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    min-width: 60px;
+}
+
+.mobile-nav-item:active {
+    transform: scale(0.95);
+}
+
+.mobile-nav-item.active {
+    color: var(--mobile-primary);
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.mobile-nav-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+}
+
+/* 表单样式 */
+.mobile-form {
+    background: var(--mobile-card);
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: var(--mobile-shadow);
+    margin-bottom: 1rem;
+}
+
+.mobile-form-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    color: var(--mobile-text);
+}
+
+.mobile-form-group {
+    margin-bottom: 1.25rem;
+}
+
+.mobile-form-label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mobile-text);
+    margin-bottom: 0.5rem;
+}
+
+.mobile-form-input,
+.mobile-form-textarea,
+.mobile-form-select {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid var(--mobile-border);
+    border-radius: 12px;
+    font-size: 1rem;
+    background: white;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.mobile-form-input:focus,
+.mobile-form-textarea:focus,
+.mobile-form-select:focus {
+    outline: none;
+    border-color: var(--mobile-primary);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.mobile-form-textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.mobile-submit-btn {
+    width: 100%;
+    background: linear-gradient(135deg, var(--mobile-primary), var(--mobile-secondary));
+    color: white;
+    border: none;
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    box-shadow: var(--mobile-shadow);
+}
+
+.mobile-submit-btn:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mobile-submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* 空状态 */
+.mobile-empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--mobile-text-light);
+}
+
+.mobile-empty-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.mobile-empty-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: var(--mobile-text);
+}
+
+.mobile-empty-description {
+    font-size: 0.875rem;
+    line-height: 1.5;
+}
+
+/* 滑动操作 */
+.mobile-swipe-actions {
+    position: absolute;
+    top: 0;
+    right: -100px;
+    height: 100%;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--mobile-danger);
+    color: white;
+    transition: right 0.3s ease;
+}
+
+.mobile-task-card.swipe-open .mobile-swipe-actions {
+    right: 0;
+}
+
+/* 深色主题 */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --mobile-bg: var(--mobile-dark-bg);
+        --mobile-card: var(--mobile-dark-card);
+        --mobile-text: var(--mobile-dark-text);
+        --mobile-border: var(--mobile-dark-border);
+    }
+}
+
+/* 横屏适配 */
+@media (orientation: landscape) and (max-height: 500px) {
+    .mobile-header {
+        padding: 0.75rem;
+    }
+    
+    .mobile-main {
+        padding: 0.75rem;
+    }
+    
+    .mobile-stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+    
+    .mobile-bottom-nav {
+        display: none;
+    }
+}
+
+/* 大屏手机适配 */
+@media (min-width: 414px) {
+    .mobile-main {
+        padding: 1.25rem;
+    }
+    
+    .mobile-stats-grid {
+        gap: 1.25rem;
+    }
+    
+    .mobile-task-card {
+        padding: 1.5rem;
+    }
+}
+
+/* 超大屏适配 */
+@media (min-width: 768px) {
+    .mobile-container {
+        max-width: 500px;
+        margin: 0 auto;
+    }
+}
+
+/* 触摸优化 */
+@media (hover: none) and (pointer: coarse) {
+    .mobile-action-btn,
+    .mobile-quick-btn,
+    .mobile-nav-item {
+        min-height: 44px;
+        min-width: 44px;
+    }
+}
+
+/* 动画类 */
+.fade-in {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.slide-up {
+    animation: slideUp 0.3s ease-out;
+}
+
+.bounce-in {
+    animation: bounceIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    70% {
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* PWA 支持 */
+.mobile-install-prompt {
+    position: fixed;
+    bottom: 100px;
+    left: 1rem;
+    right: 1rem;
+    background: var(--mobile-card);
+    border-radius: 12px;
+    padding: 1rem;
+    box-shadow: var(--mobile-shadow);
+    border: 1px solid var(--mobile-border);
+    z-index: 2000;
+    display: none;
+}
+
+.mobile-install-prompt.show {
+    display: block;
+    animation: slideUp 0.3s ease-out;
+}

@@ -18,7 +18,22 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.http import HttpResponse
+from django.shortcuts import render
 from . import views
+import os
+
+def manifest_view(request):
+    """返回PWA manifest.json"""
+    with open(os.path.join(settings.BASE_DIR, 'static', 'manifest.json'), 'r', encoding='utf-8') as f:
+        content = f.read()
+    return HttpResponse(content, content_type='application/json')
+
+def sw_view(request):
+    """返回Service Worker"""
+    with open(os.path.join(settings.BASE_DIR, 'static', 'sw.js'), 'r', encoding='utf-8') as f:
+        content = f.read()
+    return HttpResponse(content, content_type='application/javascript')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -27,6 +42,9 @@ urlpatterns = [
     path('accounts/logout/', views.custom_logout, name='logout'),  # 必须在auth.urls之前
     path('accounts/', include('django.contrib.auth.urls')),
     path('register/', views.register, name='register'),
+    # PWA相关路由
+    path('manifest.json', manifest_view, name='manifest'),
+    path('sw.js', sw_view, name='service_worker'),
 ]
 
 # 开发环境下提供媒体文件服务

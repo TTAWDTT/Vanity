@@ -1,0 +1,471 @@
+{% extends "mobile_base.html" %}
+
+{% block title %}添加任务 - Vanity{% endblock %}
+
+{% block content %}
+<div class="mobile-form">
+    <h2 class="mobile-form-title">➕ 添加新任务</h2>
+    
+    <form method="post" action="{% url 'add_task' %}">
+        {% csrf_token %}
+        
+        <div class="mobile-form-group">
+            <label for="title" class="mobile-form-label">📝 任务标题</label>
+            <input type="text" 
+                   id="title" 
+                   name="title" 
+                   class="mobile-form-input" 
+                   placeholder="输入任务标题..."
+                   required
+                   maxlength="200"
+                   autocomplete="off">
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="description" class="mobile-form-label">📄 任务描述（可选）</label>
+            <textarea id="description" 
+                      name="description" 
+                      class="mobile-form-textarea" 
+                      placeholder="描述任务详情，帮助你更好地完成任务..."
+                      maxlength="1000"></textarea>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="priority" class="mobile-form-label">🏆 优先级</label>
+            <select id="priority" name="priority" class="mobile-form-select">
+                <option value="low">♛ 低优先级</option>
+                <option value="medium" selected>♛♛ 中优先级</option>
+                <option value="high">♛♛♛ 高优先级</option>
+            </select>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="willingness" class="mobile-form-label">😊 意愿度</label>
+            <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; margin-top: 0.5rem;">
+                <label class="willingness-option" for="w1">
+                    <input type="radio" id="w1" name="willingness" value="😭" style="display: none;">
+                    <div class="willingness-button">😭</div>
+                    <div class="willingness-label">很不愿意</div>
+                </label>
+                <label class="willingness-option" for="w2">
+                    <input type="radio" id="w2" name="willingness" value="😕" style="display: none;">
+                    <div class="willingness-button">😕</div>
+                    <div class="willingness-label">不太愿意</div>
+                </label>
+                <label class="willingness-option" for="w3">
+                    <input type="radio" id="w3" name="willingness" value="😐" checked style="display: none;">
+                    <div class="willingness-button active">😐</div>
+                    <div class="willingness-label">一般</div>
+                </label>
+                <label class="willingness-option" for="w4">
+                    <input type="radio" id="w4" name="willingness" value="🙂" style="display: none;">
+                    <div class="willingness-button">🙂</div>
+                    <div class="willingness-label">比较愿意</div>
+                </label>
+                <label class="willingness-option" for="w5">
+                    <input type="radio" id="w5" name="willingness" value="😄" style="display: none;">
+                    <div class="willingness-button">😄</div>
+                    <div class="willingness-label">很愿意</div>
+                </label>
+            </div>
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="due_date" class="mobile-form-label">📅 截止日期（可选）</label>
+            <input type="date" 
+                   id="due_date" 
+                   name="due_date" 
+                   class="mobile-form-input"
+                   min="{{ today|date:'Y-m-d' }}">
+        </div>
+        
+        <div class="mobile-form-group">
+            <label for="due_time" class="mobile-form-label">⏰ 截止时间（可选）</label>
+            <input type="time" 
+                   id="due_time" 
+                   name="due_time" 
+                   class="mobile-form-input">
+        </div>
+        
+        <button type="submit" class="mobile-submit-btn" id="submitBtn">
+            <span id="submitText">✅ 创建任务</span>
+            <span id="submitSpinner" style="display: none;">🔄 创建中...</span>
+        </button>
+    </form>
+</div>
+
+<!-- 快速模板 -->
+<div style="margin-top: 1rem;">
+    <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: 1rem; color: var(--mobile-text-light);">📋 快速模板</h3>
+    <div style="display: grid; gap: 0.75rem;">
+        <button class="template-btn" onclick="applyTemplate('work')">
+            💼 工作任务
+        </button>
+        <button class="template-btn" onclick="applyTemplate('study')">
+            📚 学习计划
+        </button>
+        <button class="template-btn" onclick="applyTemplate('life')">
+            🏠 生活事务
+        </button>
+        <button class="template-btn" onclick="applyTemplate('health')">
+            💪 健康运动
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.willingness-option {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+}
+
+.willingness-button {
+    width: 50px;
+    height: 50px;
+    border-radius: 12px;
+    border: 2px solid var(--mobile-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: var(--mobile-card);
+    transition: all 0.2s ease;
+    margin-bottom: 0.25rem;
+}
+
+.willingness-button:active {
+    transform: scale(0.95);
+}
+
+.willingness-button.active {
+    border-color: var(--mobile-primary);
+    background: rgba(102, 126, 234, 0.1);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.willingness-label {
+    font-size: 0.75rem;
+    color: var(--mobile-text-light);
+    text-align: center;
+    line-height: 1.2;
+}
+
+.template-btn {
+    background: var(--mobile-card);
+    border: 1px solid var(--mobile-border);
+    border-radius: 12px;
+    padding: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--mobile-text);
+    text-align: left;
+    transition: all 0.2s ease;
+    box-shadow: var(--mobile-shadow);
+}
+
+.template-btn:active {
+    transform: scale(0.98);
+    background: rgba(102, 126, 234, 0.1);
+}
+
+/* 表单验证样式 */
+.mobile-form-input:invalid {
+    border-color: var(--mobile-danger);
+}
+
+.mobile-form-input:valid {
+    border-color: var(--mobile-success);
+}
+
+/* 字符计数器 */
+.char-counter {
+    font-size: 0.75rem;
+    color: var(--mobile-text-light);
+    text-align: right;
+    margin-top: 0.25rem;
+}
+
+.char-counter.warning {
+    color: var(--mobile-warning);
+}
+
+.char-counter.danger {
+    color: var(--mobile-danger);
+}
+</style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// 意愿度选择
+document.querySelectorAll('input[name="willingness"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        // 移除所有active状态
+        document.querySelectorAll('.willingness-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // 添加active到选中项
+        this.nextElementSibling.classList.add('active');
+    });
+});
+
+// 快速模板
+const templates = {
+    work: {
+        title: '',
+        description: '工作相关任务，需要在工作时间完成',
+        priority: 'high',
+        willingness: '😐'
+    },
+    study: {
+        title: '',
+        description: '学习新知识，提升个人能力',
+        priority: 'medium',
+        willingness: '🙂'
+    },
+    life: {
+        title: '',
+        description: '日常生活事务，维持生活品质',
+        priority: 'low',
+        willingness: '😐'
+    },
+    health: {
+        title: '',
+        description: '健康运动相关，保持身体健康',
+        priority: 'medium',
+        willingness: '😄'
+    }
+};
+
+function applyTemplate(type) {
+    const template = templates[type];
+    if (!template) return;
+    
+    // 填充表单
+    if (template.description) {
+        document.getElementById('description').value = template.description;
+    }
+    
+    document.getElementById('priority').value = template.priority;
+    
+    // 设置意愿度
+    const willingnessRadio = document.querySelector(`input[name="willingness"][value="${template.willingness}"]`);
+    if (willingnessRadio) {
+        willingnessRadio.checked = true;
+        willingnessRadio.dispatchEvent(new Event('change'));
+    }
+    
+    // 聚焦到标题输入框
+    document.getElementById('title').focus();
+    
+    // 显示反馈
+    showToast(`📋 已应用${type === 'work' ? '工作' : type === 'study' ? '学习' : type === 'life' ? '生活' : '健康'}模板`);
+}
+
+// 字符计数
+function setupCharCounter(inputId, maxLength) {
+    const input = document.getElementById(inputId);
+    const counter = document.createElement('div');
+    counter.className = 'char-counter';
+    input.parentNode.appendChild(counter);
+    
+    function updateCounter() {
+        const remaining = maxLength - input.value.length;
+        counter.textContent = `${input.value.length}/${maxLength}`;
+        
+        counter.classList.remove('warning', 'danger');
+        if (remaining < 20) {
+            counter.classList.add('warning');
+        }
+        if (remaining < 5) {
+            counter.classList.add('danger');
+        }
+    }
+    
+    input.addEventListener('input', updateCounter);
+    updateCounter();
+}
+
+// 设置字符计数器
+setupCharCounter('title', 200);
+setupCharCounter('description', 1000);
+
+// 表单提交处理
+document.querySelector('form').addEventListener('submit', function(e) {
+    const submitBtn = document.getElementById('submitBtn');
+    const submitText = document.getElementById('submitText');
+    const submitSpinner = document.getElementById('submitSpinner');
+    
+    // 显示加载状态
+    submitText.style.display = 'none';
+    submitSpinner.style.display = 'inline';
+    submitBtn.disabled = true;
+    
+    // 简单验证
+    const title = document.getElementById('title').value.trim();
+    if (!title) {
+        e.preventDefault();
+        showToast('❌ 请输入任务标题');
+        
+        // 恢复按钮状态
+        submitText.style.display = 'inline';
+        submitSpinner.style.display = 'none';
+        submitBtn.disabled = false;
+        
+        document.getElementById('title').focus();
+        return;
+    }
+    
+    // 如果验证通过，显示成功消息
+    showToast('✅ 正在创建任务...');
+});
+
+// 智能输入建议
+const titleInput = document.getElementById('title');
+const commonTasks = [
+    '完成项目报告',
+    '回复重要邮件',
+    '参加会议',
+    '学习新技能',
+    '锻炼身体',
+    '整理房间',
+    '购买生活用品',
+    '阅读书籍',
+    '写日记',
+    '联系朋友'
+];
+
+titleInput.addEventListener('input', function() {
+    const value = this.value.toLowerCase();
+    if (value.length > 1) {
+        const suggestions = commonTasks.filter(task => 
+            task.toLowerCase().includes(value)
+        );
+        
+        // 可以在这里显示建议列表
+        // 暂时只在控制台输出
+        if (suggestions.length > 0) {
+            console.log('建议:', suggestions);
+        }
+    }
+});
+
+// 自动保存草稿（本地存储）
+function saveDraft() {
+    const formData = {
+        title: document.getElementById('title').value,
+        description: document.getElementById('description').value,
+        priority: document.getElementById('priority').value,
+        willingness: document.querySelector('input[name="willingness"]:checked')?.value,
+        due_date: document.getElementById('due_date').value,
+        due_time: document.getElementById('due_time').value,
+        timestamp: Date.now()
+    };
+    
+    localStorage.setItem('taskDraft', JSON.stringify(formData));
+}
+
+function loadDraft() {
+    const draft = localStorage.getItem('taskDraft');
+    if (draft) {
+        try {
+            const formData = JSON.parse(draft);
+            
+            // 只有在草稿是最近30分钟内的才加载
+            if (Date.now() - formData.timestamp < 30 * 60 * 1000) {
+                if (confirm('检测到未完成的草稿，是否继续编辑？')) {
+                    document.getElementById('title').value = formData.title || '';
+                    document.getElementById('description').value = formData.description || '';
+                    document.getElementById('priority').value = formData.priority || 'medium';
+                    
+                    if (formData.willingness) {
+                        const radio = document.querySelector(`input[name="willingness"][value="${formData.willingness}"]`);
+                        if (radio) {
+                            radio.checked = true;
+                            radio.dispatchEvent(new Event('change'));
+                        }
+                    }
+                    
+                    document.getElementById('due_date').value = formData.due_date || '';
+                    document.getElementById('due_time').value = formData.due_time || '';
+                    
+                    showToast('📝 已恢复草稿');
+                }
+            }
+        } catch (e) {
+            console.error('加载草稿失败:', e);
+        }
+    }
+}
+
+// 自动保存
+['title', 'description', 'priority', 'due_date', 'due_time'].forEach(id => {
+    document.getElementById(id).addEventListener('input', saveDraft);
+});
+
+document.querySelectorAll('input[name="willingness"]').forEach(radio => {
+    radio.addEventListener('change', saveDraft);
+});
+
+// 页面加载时尝试恢复草稿
+document.addEventListener('DOMContentLoaded', loadDraft);
+
+// 表单成功提交后清除草稿
+window.addEventListener('beforeunload', function(e) {
+    // 如果表单已填写但未提交，保存草稿
+    const title = document.getElementById('title').value.trim();
+    if (title) {
+        saveDraft();
+    }
+});
+
+// 清除草稿（表单提交成功后调用）
+function clearDraft() {
+    localStorage.removeItem('taskDraft');
+}
+
+// Toast消息显示
+function showToast(message) {
+    const existingToast = document.getElementById('mobileToast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+    
+    const toast = document.createElement('div');
+    toast.id = 'mobileToast';
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed;
+        top: calc(env(safe-area-inset-top, 20px) + 80px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: var(--mobile-text);
+        color: var(--mobile-card);
+        padding: 0.75rem 1.5rem;
+        border-radius: 25px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        z-index: 10000;
+        box-shadow: var(--mobile-shadow);
+        animation: slideUp 0.3s ease-out;
+        max-width: calc(100vw - 2rem);
+        text-align: center;
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(-20px)';
+        setTimeout(() => {
+            toast.remove();
+        }, 300);
+    }, 3000);
+}
+</script>
+{% endblock %}

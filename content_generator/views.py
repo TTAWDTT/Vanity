@@ -8,8 +8,17 @@ from .models import Task, Event, DailySummary, LLMAdvice
 from .forms import TaskForm, EventForm
 import json
 import logging
+import re
 
 logger = logging.getLogger(__name__)
+
+def is_mobile(request):
+    """检测是否为移动端设备"""
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    mobile_pattern = re.compile(
+        r'(iPhone|iPod|iPad|Android|BlackBerry|IEMobile|Opera Mini|Mobile|mobile|Mobi)'
+    )
+    return bool(mobile_pattern.search(user_agent))
 
 @login_required
 def task_list(request):
@@ -53,7 +62,9 @@ def task_list(request):
         'now': now,
     }
     
-    return render(request, 'content_generator/task_list.html', context)
+    # 根据设备类型选择模板
+    template_name = 'content_generator/mobile_task_list.html' if is_mobile(request) else 'content_generator/task_list.html'
+    return render(request, template_name, context)
 
 @login_required
 def add_task(request):
@@ -81,7 +92,14 @@ def add_task(request):
     else:
         form = TaskForm()
     
-    return render(request, 'content_generator/add_task.html', {'form': form})
+    context = {
+        'form': form,
+        'today': timezone.now().date()
+    }
+    
+    # 根据设备类型选择模板
+    template_name = 'content_generator/mobile_add_task.html' if is_mobile(request) else 'content_generator/add_task.html'
+    return render(request, template_name, context)
 
 @login_required
 def edit_task(request, task_id):
