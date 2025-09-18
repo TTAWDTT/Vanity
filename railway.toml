@@ -1,0 +1,10 @@
+[build]
+builder = "nixpacks"
+
+[deploy]
+startCommand = "python manage.py migrate && python railway_setup.py && python manage.py collectstatic --noinput && gunicorn vanity_project.wsgi:application --bind 0.0.0.0:$PORT"
+
+[env]
+DJANGO_SETTINGS_MODULE = "vanity_project.settings"
+DEBUG = "False"
+ALLOWED_HOSTS = "*.railway.app"
