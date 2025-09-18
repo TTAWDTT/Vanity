@@ -60,17 +60,14 @@
         }
 
         .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
             background: var(--bg-card);
             border: 1px solid var(--border);
             border-radius: 50px;
-            padding: 8px;
+            padding: 6px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 20px var(--shadow);
+            box-shadow: 0 2px 10px var(--shadow);
+            margin-top: 5px;
         }
 
         .theme-toggle:hover {
@@ -485,11 +482,6 @@
     </style>
 </head>
 <body>
-    <!-- Theme Toggle -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <i class="fas fa-sun sun"></i>
-        <i class="fas fa-moon moon"></i>
-    </div>
 
     <!-- Sidebar -->
     <nav class="sidebar">
@@ -529,7 +521,13 @@
         <!-- Header -->
         <header class="header">
             <div class="header-content">
-                <h1 class="page-title">日记</h1>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h1 class="page-title">日记</h1>
+                    <div class="theme-toggle" onclick="toggleTheme()">
+                        <i class="fas fa-sun sun"></i>
+                        <i class="fas fa-moon moon"></i>
+                    </div>
+                </div>
                 <div class="user-info">
                     <i class="fas fa-user"></i>
                     <span>{{ user.username }}</span>
