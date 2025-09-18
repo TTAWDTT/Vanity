@@ -15,19 +15,19 @@ def home(request):
 
 def register(request):
     """
-    注册视图 - 用户名必须为"罗臻的仆从"
+    注册视图 - 用户名必须为"罗臻的仆从"，密码可以为任意内容
     """
     if request.method == 'POST':
         username = request.POST.get('username', '').strip()
         password = request.POST.get('password', '')
         confirm_password = request.POST.get('confirm_password', '')
         
-        # 验证用户名
+        # 验证用户名 - 必须为"罗臻的仆从"
         if username != '罗臻的仆从':
             messages.error(request, '用户名必须为"罗臻的仆从"')
             return render(request, 'registration/register.html')
         
-        # 验证密码
+        # 验证密码 - 只检查是否为空和确认密码是否一致
         if not password:
             messages.error(request, '密码不能为空')
             return render(request, 'registration/register.html')
@@ -38,10 +38,10 @@ def register(request):
         
         # 检查用户是否已存在
         if User.objects.filter(username=username).exists():
-            messages.error(request, '该用户已存在')
+            messages.error(request, '该用户已存在，请直接登录')
             return render(request, 'registration/register.html')
         
-        # 创建用户
+        # 创建用户 - 密码可以为任意内容
         try:
             user = User.objects.create_user(username=username, password=password)
             login(request, user)  # 自动登录
