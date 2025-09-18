@@ -26,7 +26,14 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-i!qf9$+o5o2=7qb)upor@
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# ALLOWED_HOSTS: read from environment variable and handle trimming/empty values.
+# Example: set ALLOWED_HOSTS="vanity-production.up.railway.app,localhost"
+allowed_hosts_env = os.environ.get('ALLOWED_HOSTS')
+if allowed_hosts_env:
+    # split by comma, strip whitespace and ignore empty entries
+    ALLOWED_HOSTS = [host.strip() for host in allowed_hosts_env.split(',') if host.strip()]
+else:
+    ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
