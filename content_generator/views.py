@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.utils import timezone
 from .models import Task, Event, DailySummary, LLMAdvice
 from .forms import TaskForm, EventForm
-from ..utils import is_mobile_device
+from utils import is_mobile_device
 import json
 import logging
 

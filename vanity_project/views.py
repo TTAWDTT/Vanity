@@ -3,16 +3,8 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from utils import is_mobile_device
 import re
-
-def is_mobile_device(request):
-    """检测是否为移动端设备"""
-    user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
-    mobile_keywords = [
-        'mobile', 'android', 'iphone', 'ipod', 'blackberry', 
-        'windows phone', 'iemobile', 'opera mini', 'mobile safari'
-    ]
-    return any(keyword in user_agent for keyword in mobile_keywords)
 
 def home(request):
     """
