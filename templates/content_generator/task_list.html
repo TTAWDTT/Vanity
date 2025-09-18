@@ -634,7 +634,7 @@
                             <h3 class="task-title">{{ task.title }}</h3>
                             <div class="task-meta">
                                 <span class="priority-indicator" title="优先级">{{ task.get_priority_display }}</span>
-                                <span class="willingness-indicator" onclick="showEmojiPicker(this, {{ task.id }})" title="点击修改意愿度">{{ task.willingness }}</span>
+                                <span class="willingness-indicator" data-task-id="{{ task.id }}" title="点击修改意愿度">{{ task.willingness }}</span>
                                 {% if task.due_date %}
                                 <span class="task-date">
                                     <i class="fas fa-calendar"></i>
@@ -654,7 +654,7 @@
                     {% endif %}
 
                     <div class="task-actions">
-                        <button class="btn btn-success btn-sm" onclick="toggleTask({{ task.id }})">
+                        <button class="btn btn-success btn-sm toggle-task-btn" data-task-id="{{ task.id }}">
                             {% if task.completed %}
                                 <i class="fas fa-undo"></i>
                                 取消完成
@@ -667,7 +667,7 @@
                             <i class="fas fa-edit"></i>
                             编辑
                         </a>
-                        <button class="btn btn-outline btn-sm" onclick="getLLMAdvice({{ task.id }})">
+                        <button class="btn btn-outline btn-sm llm-advice-btn" data-task-id="{{ task.id }}">
                             <i class="fas fa-lightbulb"></i>
                             建议
                         </button>
@@ -757,7 +757,7 @@
             });
         }
 
-        // Show emoji picker
+        // Show emoji picker (invoked from delegated click handlers)
         let currentTaskId = null;
         function showEmojiPicker(element, taskId) {
             const picker = document.getElementById('emojiPicker');
@@ -800,8 +800,7 @@
         }
 
         // Get LLM advice
-        function getLLMAdvice(taskId) {
-            const button = event.target.closest('button');
+        function getLLMAdvice(taskId, button) {
             const originalText = button.innerHTML;
             button.innerHTML = '<span class="loading"></span> 获取中...';
             button.disabled = true;
@@ -855,6 +854,30 @@
                     card.classList.add('slide-up');
                 }, index * 100);
             });
+        });
+
+        // Delegated event listeners to avoid inline onclick with template variables
+        document.addEventListener('click', function(e) {
+            // Toggle task
+            const toggleBtn = e.target.closest('.toggle-task-btn');
+            if (toggleBtn) {
+                const id = toggleBtn.getAttribute('data-task-id');
+                if (id) toggleTask(id);
+            }
+
+            // LLM advice
+            const adviceBtn = e.target.closest('.llm-advice-btn');
+            if (adviceBtn) {
+                const id = adviceBtn.getAttribute('data-task-id');
+                if (id) getLLMAdvice(id, adviceBtn);
+            }
+
+            // Willingness indicator (show emoji picker)
+            const willing = e.target.closest('.willingness-indicator');
+            if (willing) {
+                const id = willing.getAttribute('data-task-id');
+                if (id) showEmojiPicker(willing, id);
+            }
         });
     </script>
 </body>

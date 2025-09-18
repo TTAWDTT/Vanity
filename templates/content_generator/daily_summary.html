@@ -643,7 +643,7 @@
                             <span>{{ month_progress }}%</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ month_progress }}%"></div>
+                            <div class="progress-fill" data-progress="{{ month_progress|default:0 }}"></div>
                         </div>
                     </div>
 
@@ -653,7 +653,7 @@
                             <span>{{ week_progress }}%</span>
                         </div>
                         <div class="progress-bar">
-                            <div class="progress-fill" style="width: {{ week_progress }}%"></div>
+                            <div class="progress-fill" data-progress="{{ week_progress|default:0 }}"></div>
                         </div>
                     </div>
 
@@ -787,6 +787,17 @@
                 setTimeout(() => {
                     item.classList.add('slide-up');
                 }, index * 100);
+            });
+        });
+
+        // Apply progress widths safely to avoid template-inlined style causing CSS parse errors
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.progress-fill[data-progress]').forEach(el => {
+                let val = parseFloat(el.getAttribute('data-progress'));
+                if (isNaN(val)) val = 0;
+                if (val < 0) val = 0;
+                if (val > 100) val = 100;
+                el.style.width = val + '%';
             });
         });
     </script>
