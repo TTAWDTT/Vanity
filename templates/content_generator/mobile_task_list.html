@@ -25,7 +25,7 @@
 
 <!-- 快速操作 -->
 <div class="mobile-quick-actions">
-    <a href="{% url 'add_task' %}" class="mobile-quick-btn primary">
+    <a href="{% url 'content_generator:add_task' %}" class="mobile-quick-btn primary">
         <span>➕</span>
         <span>添加任务</span>
     </a>
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     break;
             }
         } else if (action === 'add-task') {
-            window.location.href = "{% url 'add_task' %}";
+            window.location.href = "{% url 'content_generator:add_task' %}";
         }
     });
 });

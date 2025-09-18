@@ -111,7 +111,7 @@
             position: fixed;
             left: 0;
             top: 0;
-            width: 280px;
+            width: 220px;
             height: 100vh;
             background: var(--bg-sidebar);
             border-right: 1px solid var(--border);
@@ -178,7 +178,7 @@
         }
 
         .main-content {
-            margin-left: 280px;
+            margin-left: 220px;
             min-height: 100vh;
             background: var(--bg-secondary);
         }
@@ -607,11 +607,11 @@
                     {% endif %}
 
                     <div class="diary-actions">
-                        <button class="btn btn-outline btn-sm" onclick="viewDiary({{ event.id }})">
+                        <button class="btn btn-outline btn-sm" data-action="view" data-event-id="{{ event.id }}">
                             <i class="fas fa-eye"></i>
                             查看详情
                         </button>
-                        <button class="btn btn-outline btn-sm" onclick="generateContent({{ event.id }})">
+                        <button class="btn btn-outline btn-sm" data-action="generate" data-event-id="{{ event.id }}">
                             <i class="fas fa-magic"></i>
                             生成内容
                         </button>
@@ -630,6 +630,26 @@
     </main>
 
     <script>
+        // 事件委托处理按钮点击
+        document.addEventListener('DOMContentLoaded', function() {
+            // 为所有按钮添加事件监听器
+            document.addEventListener('click', function(e) {
+                const action = e.target.closest('button')?.getAttribute('data-action');
+                const eventId = e.target.closest('button')?.getAttribute('data-event-id');
+                
+                if (action && eventId) {
+                    switch(action) {
+                        case 'view':
+                            viewDiary(eventId);
+                            break;
+                        case 'generate':
+                            generateContent(eventId, e.target.closest('button'));
+                            break;
+                    }
+                }
+            });
+        });
+
         // Theme Toggle
         function toggleTheme() {
             const body = document.body;
@@ -677,11 +697,12 @@
         function viewDiary(eventId) {
             // You can implement a modal or redirect to detail page
             console.log('View diary:', eventId);
+            // TODO: 实现查看详情功能
+            alert(`查看日记详情 ID: ${eventId}`);
         }
 
         // Generate content
-        function generateContent(eventId) {
-            const button = event.target.closest('button');
+        function generateContent(eventId, button) {
             const originalText = button.innerHTML;
             button.innerHTML = '<span class="loading"></span> 生成中...';
             button.disabled = true;
@@ -700,6 +721,12 @@
                 if (data.content) {
                     alert(data.content);
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                button.innerHTML = originalText;
+                button.disabled = false;
+                alert('生成内容时出错，请重试');
             });
         }
 

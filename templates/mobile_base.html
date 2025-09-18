@@ -60,19 +60,19 @@
         
         <!-- 底部导航栏 -->
         <nav class="mobile-bottom-nav">
-            <a href="{% url 'task_list' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}">
+            <a href="{% url 'content_generator:task_list' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'task_list' %}active{% endif %}">
                 <div class="mobile-nav-icon">📋</div>
                 <span>任务</span>
             </a>
-            <a href="{% url 'event_list' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'event_list' %}active{% endif %}">
+            <a href="{% url 'content_generator:event_list' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'event_list' %}active{% endif %}">
                 <div class="mobile-nav-icon">📖</div>
                 <span>日记</span>
             </a>
-            <a href="{% url 'add_task' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'add_task' %}active{% endif %}">
+            <a href="{% url 'content_generator:add_task' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'add_task' %}active{% endif %}">
                 <div class="mobile-nav-icon">➕</div>
                 <span>添加</span>
             </a>
-            <a href="{% url 'daily_summary' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'daily_summary' %}active{% endif %}">
+            <a href="{% url 'content_generator:daily_summary' %}" class="mobile-nav-item {% if request.resolver_match.url_name == 'daily_summary' %}active{% endif %}">
                 <div class="mobile-nav-icon">📊</div>
                 <span>统计</span>
             </a>

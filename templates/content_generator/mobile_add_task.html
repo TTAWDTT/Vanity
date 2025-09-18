@@ -6,7 +6,7 @@
 <div class="mobile-form">
     <h2 class="mobile-form-title">➕ 添加新任务</h2>
     
-    <form method="post" action="{% url 'add_task' %}">
+    <form method="post" action="{% url 'content_generator:add_task' %}">>
         {% csrf_token %}
         
         <div class="mobile-form-group">
