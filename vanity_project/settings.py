@@ -166,3 +166,26 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
+
+# Trust origins for CSRF (must include scheme, e.g. 'https://yourdomain')
+# Read from environment variable CSRF_TRUSTED_ORIGINS, comma separated
+raw_csrf_origins = os.environ.get('CSRF_TRUSTED_ORIGINS', '')
+if raw_csrf_origins:
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in raw_csrf_origins.split(',') if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = []
+
+# When behind a proxy (Railway), ensure Django knows secure protocol
+# so CSRF and secure cookies behave correctly
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Use secure cookies when not in debug
+CSRF_COOKIE_SECURE = not DEBUG
+SESSION_COOKIE_SECURE = not DEBUG
+
+# Debug logging to appear in deploy logs
+try:
+    import sys
+    print(f"[settings] CSRF_TRUSTED_ORIGINS={CSRF_TRUSTED_ORIGINS}", file=sys.stdout)
+except Exception:
+    pass
