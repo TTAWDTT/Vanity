@@ -8,3 +8,4 @@ startCommand = "python manage.py migrate && python railway_setup.py && python ma
 DJANGO_SETTINGS_MODULE = "vanity_project.settings"
 DEBUG = "False"
 ALLOWED_HOSTS = "*.railway.app"
+CSRF_TRUSTED_ORIGINS = "https://*.railway.app"

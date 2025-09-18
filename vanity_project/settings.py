@@ -177,17 +177,40 @@ if raw_csrf_origins:
 else:
     CSRF_TRUSTED_ORIGINS = []
 
+# Additional CSRF settings for development
+if DEBUG:
+    # Allow localhost and 127.0.0.1 for CSRF in development
+    CSRF_TRUSTED_ORIGINS.extend([
+        'http://127.0.0.1:8000',
+        'http://localhost:8000',
+    ])
+
 # When behind a proxy (Railway), ensure Django knows secure protocol
 # so CSRF and secure cookies behave correctly
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
-# Use secure cookies when not in debug
-CSRF_COOKIE_SECURE = not DEBUG
-SESSION_COOKIE_SECURE = not DEBUG
+# Use secure cookies when not in debug mode and in production
+# For local development, keep cookies non-secure to avoid CSRF issues
+if not DEBUG:
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+else:
+    # Development settings - allow non-secure cookies for localhost
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
+    # Ensure CSRF cookies work with localhost
+    CSRF_COOKIE_DOMAIN = None
+    CSRF_COOKIE_SAMESITE = 'Lax'
 
 # Debug logging to appear in deploy logs
 try:
     import sys
     print(f"[settings] CSRF_TRUSTED_ORIGINS={CSRF_TRUSTED_ORIGINS}", file=sys.stdout)
+    print(f"[settings] CSRF_COOKIE_SECURE={CSRF_COOKIE_SECURE} SESSION_COOKIE_SECURE={SESSION_COOKIE_SECURE}", file=sys.stdout)
 except Exception:
     pass
+
+# Authentication settings
+LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL = '/content/tasks/'
+LOGOUT_REDIRECT_URL = '/'
