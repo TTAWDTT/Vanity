@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vanity - 个人任务管理系统</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            /* 深色主题 */
+            --bg-primary: #0f0f23;
+            --bg-secondary: #1a1a2e;
+            --bg-card: #16213e;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0a0;
+            --text-muted: #6b7280;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #334155;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --shadow: rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="light"] {
+            /* 浅色主题 */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --text-muted: #9ca3af;
+            --accent: #3b82f6;
+            --accent-light: #60a5fa;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: var(--text-primary);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 20px var(--shadow);
+        }
+
+        .theme-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px var(--shadow);
+        }
+
+        .theme-toggle i {
+            font-size: 1.2rem;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle .sun {
+            color: var(--warning);
+            opacity: 0;
+            transform: rotate(180deg);
+        }
+
+        .theme-toggle .moon {
+            color: var(--accent);
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .sun {
+            opacity: 1;
+            transform: rotate(0deg);
+        }
+
+        [data-theme="light"] .theme-toggle .moon {
+            opacity: 0;
+            transform: rotate(-180deg);
+        }
+
+        .container {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            max-width: 1200px;
+            width: 90%;
+            box-shadow: 0 20px 40px var(--shadow);
+            animation: slideUp 0.5s ease-out;
+        }
+
+        .logo {
+            font-size: 3rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.3rem;
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .feature {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .feature::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+        }
+
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+        }
+
+        .feature h3 {
+            color: var(--text-primary);
+            margin: 0 0 0.75rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .feature p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .user-welcome {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .user-welcome i {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .user-welcome span {
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+
+        .btn-group {
+            margin-top: 2.5rem;
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .user-actions {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        .register-prompt {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+        
+        .register-prompt a {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .register-prompt a:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.875rem 2rem;
+            border: none;
+            border-radius: 12px;
+            font-weight: 500;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            color: var(--text-primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--accent);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success), #059669);
+            color: white;
+            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.6s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+        
+        .feature-btn {
+            margin-top: 1rem;
+            padding: 0.5rem 1rem;
+            font-size: 0.9rem;
+        }
+        
+        .user-actions {
+            text-align: center;
+            margin-top: 2rem;
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        /* Animations */
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .bounce {
+            animation: bounce 0.6s ease-in-out;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* Messages */
+        .messages {
+            margin-bottom: 2rem;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid #ef4444;
+            color: #ef4444;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 2rem;
+                margin: 1rem;
+            }
+
+            .logo {
+                font-size: 2.5rem;
+            }
+
+            .subtitle {
+                font-size: 1.1rem;
+            }
+
+            .features {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+
+            .feature {
+                padding: 1.5rem;
+            }
+
+            .btn-group {
+                flex-direction: column;
+            }
+
+            .btn {
+                padding: 1rem 2rem;
+            }
+        }
+        
+        /* 中等屏幕优化 */
+        @media (min-width: 769px) and (max-width: 1199px) {
+            .features {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 大屏幕优化 */
+        @media (min-width: 1200px) {
+            .container {
+                padding: 4rem;
+            }
+            
+            .features {
+                gap: 2.5rem;
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .feature {
+                padding: 2.5rem;
+            }
+            
+            .btn {
+                padding: 1rem 2.5rem;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle -->
+    <div class="theme-toggle" onclick="toggleTheme()">
+        <i class="fas fa-sun sun"></i>
+        <i class="fas fa-moon moon"></i>
+    </div>
+
+    <div class="container">
+        <div class="logo">Vanity</div>
+        <div class="subtitle">个人任务管理与内容生成系统</div>
+        
+        <!-- Messages -->
+        {% if messages %}
+        <div class="messages">
+            {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+                {{ message }}
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        
+        <!-- User Welcome (for authenticated users) -->
+        {% if user.is_authenticated %}
+        <div class="user-welcome">
+            <i class="fas fa-user-circle"></i>
+            <span>欢迎回来，{{ user.username }}！</span>
+        </div>
+        {% endif %}
+
+        <div class="features">
+            <div class="feature">
+                <span class="feature-icon">📝</span>
+                <h3>任务管理</h3>
+                <p>高效管理您的日常任务，支持优先级设置、意愿度标记和智能建议</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'content_generator:task_list' %}" class="btn btn-primary feature-btn">
+                    <i class="fas fa-tasks"></i>
+                    管理任务
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    登录使用
+                </a>
+                {% endif %}
+            </div>
+            <div class="feature">
+                <span class="feature-icon">📖</span>
+                <h3>日记记录</h3>
+                <p>记录生活点滴，支持心情标记和图片上传，留下美好回忆</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'content_generator:event_list' %}" class="btn btn-primary feature-btn">
+                    <i class="fas fa-book"></i>
+                    查看日记
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    登录使用
+                </a>
+                {% endif %}
+            </div>
+            <div class="feature">
+                <span class="feature-icon">🤖</span>
+                <h3>智能建议</h3>
+                <p>基于AI的任务建议和内容生成功能，提升工作效率</p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    登录体验
+                </a>
+                {% endif %}
+            </div>
+            <div class="feature">
+                <span class="feature-icon">📊</span>
+                <h3>日总结</h3>
+                <p>自动生成日常工作总结，跟踪进展和成就</p>
+                {% if not user.is_authenticated %}
+                <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    登录查看
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if user.is_authenticated %}
+        <div class="user-actions">
+            <a href="{% url 'logout' %}" class="btn btn-secondary">
+                <i class="fas fa-sign-out-alt"></i>
+                退出登录
+            </a>
+        </div>
+        {% else %}
+        <div class="register-prompt">
+            <p>还没有账户？<a href="{% url 'register' %}">立即注册</a> | <a href="{% url 'admin:index' %}">管理员入口</a></p>
+        </div>
+        {% endif %}
+
+        <div class="footer">
+            <p>© 2025 Vanity 项目 - 让任务管理更简单、更智能</p>
+        </div>
+    </div>
+
+    <script>
+        // Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Add bounce animation to toggle button
+            document.querySelector('.theme-toggle').classList.add('bounce');
+            setTimeout(() => {
+                document.querySelector('.theme-toggle').classList.remove('bounce');
+            }, 600);
+        }
+
+        // Load saved theme
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.body.setAttribute('data-theme', savedTheme);
+        });
+
+        // Add entrance animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.querySelector('.container');
+            container.classList.add('slideUp');
+        });
+    </script>
+</body>
+</html>
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            color: #999;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">Vanity</div>
+        <div class="subtitle">个人任务管理与内容生成系统</div>
+        
+        <div class="features">
+            <div class="feature">
+                <h3>📝 任务管理</h3>
+                <p>高效管理您的日常任务，支持添加、编辑、完成状态切换</p>
+            </div>
+            <div class="feature">
+                <h3>� 日记</h3>
+                <p>记录生活点滴，留下美好回忆</p>
+            </div>
+            <div class="feature">
+                <h3>🤖 智能建议</h3>
+                <p>基于AI的任务建议和内容生成功能</p>
+            </div>
+            <div class="feature">
+                <h3>📊 日总结</h3>
+                <p>自动生成日常工作总结，回顾进展</p>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            {% if user.is_authenticated %}
+                <a href="{% url 'content_generator:task_list' %}" class="btn btn-primary">进入任务管理</a>
+                <a href="{% url 'logout' %}" class="btn btn-secondary">登出</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary">登录</a>
+                <a href="{% url 'register' %}" class="btn btn-primary">注册</a>
+                <a href="{% url 'admin:index' %}" class="btn btn-secondary">管理员入口</a>
+            {% endif %}
+        </div>
+        
+        <div class="footer">
+            <p>欢迎使用 Vanity 项目 &copy; 2024</p>
+        </div>
+    </div>
+</body>
+</html>

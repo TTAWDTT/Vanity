@@ -6,12 +6,21 @@ from django.contrib.auth.decorators import login_required
 
 def home(request):
     """
-    主页视图 - 如果用户已登录则重定向到任务列表，否则显示欢迎页面
+    主页视图 - 检测设备类型并返回适当的模板
     """
-    if request.user.is_authenticated:
+    # 检测是否为移动设备
+    user_agent = request.META.get('HTTP_USER_AGENT', '').lower()
+    is_mobile = any(device in user_agent for device in [
+        'mobile', 'android', 'iphone', 'ipod', 'blackberry', 'windows phone'
+    ])
+    
+    # 如果用户已登录且不是移动设备，重定向到任务列表
+    if request.user.is_authenticated and not is_mobile:
         return redirect('content_generator:task_list')
-    else:
-        return render(request, 'home.html')
+    
+    # 根据设备类型选择模板
+    template = 'mobile_home.html' if is_mobile else 'home.html'
+    return render(request, template)
 
 def register(request):
     """

@@ -5,6 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>登录 - Vanity 项目</title>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -16,13 +22,81 @@
             justify-content: center;
         }
         
+        .login-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
         .login-container {
             background: white;
-            padding: 2rem;
             border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 400px;
+            max-width: 1000px;
+            display: flex;
+            overflow: hidden;
+        }
+        
+        .login-banner {
+            flex: 1;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .login-banner h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .login-banner p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .login-banner-icon {
+            font-size: 5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .features-list {
+            text-align: left;
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .feature-icon {
+            font-size: 1.5rem;
+            margin-right: 1rem;
+            color: #fff;
+        }
+        
+        .feature-text {
+            font-size: 1rem;
+        }
+        
+        .login-form-container {
+            flex: 1;
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         
         .login-header {
@@ -33,7 +107,7 @@
         .login-header h1 {
             color: #333;
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 2rem;
         }
         
         .login-header p {
@@ -54,7 +128,7 @@
         
         .form-group input {
             width: 100%;
-            padding: 0.75rem;
+            padding: 1rem;
             border: 2px solid #e1e5e9;
             border-radius: 8px;
             font-size: 1rem;
@@ -69,15 +143,16 @@
         
         .btn-login {
             width: 100%;
-            padding: 0.75rem;
+            padding: 1rem;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: white;
             border: none;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: 500;
             cursor: pointer;
             transition: transform 0.2s ease;
+            margin-top: 1rem;
         }
         
         .btn-login:hover {
@@ -95,61 +170,146 @@
         
         .links {
             text-align: center;
-            margin-top: 1.5rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #eee;
         }
         
         .links a {
             color: #667eea;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 1rem;
+            margin: 0 1rem;
+            display: inline-block;
+            margin-bottom: 0.5rem;
         }
         
         .links a:hover {
             text-decoration: underline;
         }
+        
+        .admin-link {
+            display: block;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            color: #999;
+        }
+        
+        .hint-box {
+            background: #f0f8ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1.5rem;
+            font-size: 0.95rem;
+            color: #333;
+            border-left: 4px solid #667eea;
+        }
+        
+        .hint-icon {
+            margin-right: 0.5rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 500px;
+            }
+            
+            .login-banner {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-form-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .login-banner h2 {
+                font-size: 1.8rem;
+            }
+            
+            .login-banner p {
+                font-size: 1rem;
+            }
+            
+            .features-list {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-header">
-            <h1>登录</h1>
-            <p>请输入您的账户信息</p>
-            <div style="background: #f0f8ff; padding: 0.75rem; border-radius: 8px; margin-top: 1rem; font-size: 0.9rem; color: #333;">
-                💡 提示：用户名为"罗臻的仆从"，密码为您注册时设置的任意内容
-            </div>
-        </div>
-        
-        {% if form.errors %}
-            <div class="error-messages">
-                {% for field in form %}
-                    {% for error in field.errors %}
-                        <p>{{ error }}</p>
-                    {% endfor %}
-                {% endfor %}
-                {% for error in form.non_field_errors %}
-                    <p>{{ error }}</p>
-                {% endfor %}
-            </div>
-        {% endif %}
-        
-        <form method="post">
-            {% csrf_token %}
-            <div class="form-group">
-                <label for="{{ form.username.id_for_label }}">用户名:</label>
-                {{ form.username }}
+    <div class="login-wrapper">
+        <div class="login-container">
+            <div class="login-banner">
+                <div class="login-banner-icon">🔒</div>
+                <h2>Vanity 项目</h2>
+                <p>个人任务管理与内容生成系统</p>
+                
+                <div class="features-list">
+                    <div class="feature-item">
+                        <div class="feature-icon">📝</div>
+                        <div class="feature-text">高效任务管理</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📖</div>
+                        <div class="feature-text">日记记录与回顾</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">🤖</div>
+                        <div class="feature-text">AI智能建议</div>
+                    </div>
+                    <div class="feature-item">
+                        <div class="feature-icon">📊</div>
+                        <div class="feature-text">日总结报告</div>
+                    </div>
+                </div>
             </div>
             
-            <div class="form-group">
-                <label for="{{ form.password.id_for_label }}">密码:</label>
-                {{ form.password }}
+            <div class="login-form-container">
+                <div class="login-header">
+                    <h1>欢迎回来</h1>
+                    <p>请输入您的账户信息</p>
+                </div>
+                
+                {% if form.errors %}
+                    <div class="error-messages">
+                        {% for field in form %}
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.username.id_for_label }}">用户名</label>
+                        {{ form.username }}
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="{{ form.password.id_for_label }}">密码</label>
+                        {{ form.password }}
+                    </div>
+                    
+                    <button type="submit" class="btn-login">登录</button>
+                </form>
+                
+                <div class="hint-box">
+                    <span class="hint-icon">💡</span>
+                    提示：用户名为"罗臻的仆从"，密码为您注册时设置的任意内容
+                </div>
+                
+                <div class="links">
+                    <a href="{% url 'register' %}">还没有账户？立即注册</a>
+                    <a href="{% url 'admin:index' %}" class="admin-link">管理员登录</a>
+                </div>
             </div>
-            
-            <button type="submit" class="btn-login">登录</button>
-        </form>
-        
-        <div class="links">
-            <a href="{% url 'register' %}">还没有账户？立即注册</a>
-            <a href="{% url 'admin:index' %}">管理员登录</a>
         </div>
     </div>
 </body>

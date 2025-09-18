@@ -1,0 +1,144 @@
+{% extends 'mobile_base.html' %}
+{% load static %}
+
+{% block title %}Vanity - 移动端主页{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero-section {
+        padding: 2rem 1rem;
+        text-align: center;
+        background: var(--mobile-gradient);
+        color: white;
+        margin: -1rem -1rem 1rem -1rem;
+    }
+    
+    .hero-title {
+        font-size: 2rem;
+        font-weight: 800;
+        margin-bottom: 0.5rem;
+        letter-spacing: -0.02em;
+    }
+    
+    .hero-subtitle {
+        font-size: 1rem;
+        opacity: 0.9;
+        margin-bottom: 1.5rem;
+    }
+    
+    .feature-cards {
+        display: grid;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .feature-card {
+        background: var(--mobile-card);
+        border-radius: 16px;
+        padding: 1.5rem;
+        text-align: center;
+        box-shadow: var(--mobile-shadow);
+        border: 1px solid var(--mobile-border);
+        transition: transform 0.2s ease;
+    }
+    
+    .feature-card:active {
+        transform: scale(0.98);
+    }
+    
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        display: block;
+    }
+    
+    .feature-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--mobile-text);
+    }
+    
+    .feature-desc {
+        font-size: 0.875rem;
+        color: var(--mobile-text-light);
+        line-height: 1.5;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-section">
+    <h1 class="hero-title">欢迎使用 Vanity</h1>
+    <p class="hero-subtitle">智能任务管理，让工作更高效</p>
+</div>
+
+<div class="feature-cards">
+    <div class="feature-card">
+        <span class="feature-icon">📝</span>
+        <h3 class="feature-title">任务管理</h3>
+        <p class="feature-desc">创建、编辑和跟踪您的日常任务</p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">📅</span>
+        <h3 class="feature-title">事件规划</h3>
+        <p class="feature-desc">安排重要事件和会议</p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">📊</span>
+        <h3 class="feature-title">数据统计</h3>
+        <p class="feature-desc">查看您的工作效率分析</p>
+    </div>
+    
+    <div class="feature-card">
+        <span class="feature-icon">🎯</span>
+        <h3 class="feature-title">目标跟踪</h3>
+        <p class="feature-desc">设定并追踪长期目标</p>
+    </div>
+</div>
+
+{% if user.is_authenticated %}
+<div class="mobile-form">
+    <h2 class="mobile-form-title">快速开始</h2>
+    <p style="text-align: center; color: var(--mobile-text-light); margin-bottom: 1.5rem;">
+        欢迎回来，{{ user.username }}！
+    </p>
+    <a href="{% url 'content_generator:task_list' %}" class="mobile-submit-btn" style="text-decoration: none; display: block; text-align: center;">
+        查看我的任务
+    </a>
+</div>
+{% else %}
+<div class="mobile-form">
+    <h2 class="mobile-form-title">开始使用</h2>
+    <p style="text-align: center; color: var(--mobile-text-light); margin-bottom: 1.5rem;">
+        登录您的账户以开始管理任务
+    </p>
+    <a href="/admin/login/" class="mobile-submit-btn" style="text-decoration: none; display: block; text-align: center;">
+        立即登录
+    </a>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block bottom_nav %}
+<div class="mobile-bottom-nav">
+    <a href="{% url 'home' %}" class="mobile-nav-item active">
+        <span class="mobile-nav-icon">🏠</span>
+        <span>首页</span>
+    </a>
+    <a href="{% url 'content_generator:task_list' %}" class="mobile-nav-item">
+        <span class="mobile-nav-icon">📝</span>
+        <span>任务</span>
+    </a>
+    <a href="{% url 'content_generator:event_list' %}" class="mobile-nav-item">
+        <span class="mobile-nav-icon">📅</span>
+        <span>事件</span>
+    </a>
+    <a href="{% url 'content_generator:daily_summary' %}" class="mobile-nav-item">
+        <span class="mobile-nav-icon">📊</span>
+        <span>总结</span>
+    </a>
+</div>
+{% endblock %}

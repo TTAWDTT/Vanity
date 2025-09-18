@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Vanity">
-    <meta name="theme-color" content="#667eea">
+    <meta name="theme-color" content="#4361ee">
     
     <!-- PWA 支持 -->
     <link rel="manifest" href="{% url 'manifest' %}">
@@ -15,7 +15,7 @@
     <meta name="apple-touch-fullscreen" content="yes">
     <meta name="mobile-web-app-capable" content="yes">
     
-    <title>{% block title %}Vanity - 任务管理{% endblock %}</title>
+    <title>{% block title %}Vanity - 智能任务管理{% endblock %}</title>
     
     <!-- 预加载关键资源 -->
     <link rel="preload" href="{% load static %}{% static 'css/mobile.css' %}" as="style">
@@ -25,8 +25,45 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/mobile.css' %}">
     
-    <!-- Emoji 字体支持 -->
+    <!-- 同步更新的主题色彩 -->
     <style>
+        :root {
+            /* 更新颜色变量以匹配home页面 */
+            --mobile-primary: #4361ee;
+            --mobile-secondary: #4cc9f0;
+            --mobile-bg: #0a0a16;
+            --mobile-card: #1e1e36;
+            --mobile-text: #ffffff;
+            --mobile-text-light: #b0b0c0;
+            --mobile-border: #2d2d4d;
+            --mobile-success: #4ade80;
+            --mobile-warning: #facc15;
+            --mobile-danger: #f87171;
+            --mobile-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            --mobile-gradient: linear-gradient(135deg, var(--mobile-primary), var(--mobile-secondary));
+        }
+        
+        [data-theme="light"] {
+            --mobile-bg: #f0f4f8;
+            --mobile-card: #ffffff;
+            --mobile-text: #1e293b;
+            --mobile-text-light: #64748b;
+            --mobile-border: #cbd5e1;
+            --mobile-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 更新移动端头部样式 */
+        .mobile-header {
+            background: linear-gradient(135deg, var(--mobile-primary), var(--mobile-secondary));
+            box-shadow: var(--mobile-shadow);
+        }
+        
+        .mobile-logo {
+            font-weight: 800;
+            font-size: 1.25rem;
+        }
+        
+        /* Emoji 字体支持 */
         @supports (-webkit-touch-callout: none) {
             .mobile-task-willingness,
             .mobile-task-priority,

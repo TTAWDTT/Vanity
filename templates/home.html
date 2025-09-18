@@ -9,33 +9,38 @@
     <style>
         :root {
             /* 深色主题 */
-            --bg-primary: #0f0f23;
-            --bg-secondary: #1a1a2e;
-            --bg-card: #16213e;
+            --bg-primary: #0a0a16;
+            --bg-secondary: #16162a;
+            --bg-card: #1e1e36;
+            --bg-accent: #252545;
             --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --text-muted: #6b7280;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
-            --border: #334155;
-            --success: #10b981;
-            --warning: #f59e0b;
-            --shadow: rgba(0, 0, 0, 0.3);
+            --text-secondary: #b0b0c0;
+            --text-muted: #7a7a9a;
+            --accent: #4361ee;
+            --accent-light: #4cc9f0;
+            --accent-gradient: linear-gradient(135deg, var(--accent), var(--accent-light));
+            --border: #2d2d4d;
+            --success: #4ade80;
+            --warning: #facc15;
+            --error: #f87171;
+            --shadow: rgba(0, 0, 0, 0.4);
         }
 
         [data-theme="light"] {
             /* 浅色主题 */
-            --bg-primary: #ffffff;
-            --bg-secondary: #f8fafc;
+            --bg-primary: #f0f4f8;
+            --bg-secondary: #e2e8f0;
             --bg-card: #ffffff;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --text-muted: #9ca3af;
-            --accent: #3b82f6;
-            --accent-light: #60a5fa;
-            --border: #e2e8f0;
-            --success: #10b981;
-            --warning: #f59e0b;
+            --bg-accent: #f8fafc;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --accent: #4361ee;
+            --accent-light: #4cc9f0;
+            --border: #cbd5e1;
+            --success: #16a34a;
+            --warning: #ca8a04;
+            --error: #dc2626;
             --shadow: rgba(0, 0, 0, 0.1);
         }
 
@@ -46,40 +51,76 @@
         }
 
         body {
-            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            background: var(--bg-primary);
             color: var(--text-primary);
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             line-height: 1.6;
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        .header {
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px var(--shadow);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .theme-toggle {
+            background: var(--bg-accent);
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 0.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .theme-toggle {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1000;
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 50px;
-            padding: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 20px var(--shadow);
-        }
-
         .theme-toggle:hover {
             transform: scale(1.1);
-            box-shadow: 0 6px 30px var(--shadow);
+            box-shadow: 0 4px 10px var(--shadow);
         }
 
         .theme-toggle i {
             font-size: 1.2rem;
-            padding: 8px;
-            border-radius: 50%;
-            transition: all 0.3s ease;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .theme-toggle .sun {
@@ -104,55 +145,190 @@
             transform: rotate(-180deg);
         }
 
-        .container {
-            background: var(--bg-card);
-            border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 3rem;
+        /* Hero Section */
+        .hero {
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(67, 97, 238, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(76, 201, 240, 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            padding: 8rem 2rem 6rem;
             text-align: center;
-            max-width: 700px;
-            width: 90%;
-            box-shadow: 0 20px 40px var(--shadow);
-            animation: slideUp 0.5s ease-out;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid var(--border);
         }
 
-        .logo {
-            font-size: 3rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.05)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: rgba(67, 97, 238, 0.1);
+            border: 1px solid rgba(67, 97, 238, 0.3);
+            border-radius: 50px;
+            padding: 0.75rem 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--accent-light);
+            backdrop-filter: blur(10px);
+            animation: slideInDown 0.8s ease;
+        }
+
+        .hero-badge::before {
+            content: '✨';
+            font-size: 1.2rem;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 50%, var(--accent) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+            animation: slideInUp 0.8s ease 0.2s both;
         }
 
-        .subtitle {
-            color: var(--text-secondary);
+        .hero-subtitle {
             font-size: 1.3rem;
-            margin-bottom: 2.5rem;
-            font-weight: 400;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.7;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            animation: slideInUp 0.8s ease 0.4s both;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: slideInUp 0.8s ease 0.6s both;
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 4rem;
+            margin-top: 4rem;
+            padding-top: 3rem;
+            border-top: 1px solid var(--border);
+            animation: slideInUp 0.8s ease 0.8s both;
+        }
+
+        .hero-stat {
+            text-align: center;
+        }
+
+        .hero-stat-number {
+            display: block;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--accent-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1;
+        }
+
+        .hero-stat-label {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-top: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Features Section */
+        .features-section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        .features-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 100px;
+            background: var(--accent-gradient);
+            opacity: 0.6;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.01em;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 4rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .features {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 1.5rem;
-            margin: 2.5rem 0;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
         }
 
         .feature {
-            background: var(--bg-secondary);
+            background: var(--bg-card);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 2rem;
-            transition: all 0.3s ease;
+            border-radius: 20px;
+            padding: 3rem;
+            transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 2.5rem;
+            backdrop-filter: blur(10px);
         }
 
         .feature:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px var(--shadow);
+            transform: translateY(-8px);
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(67, 97, 238, 0.2);
             border-color: var(--accent);
         }
 
@@ -163,64 +339,197 @@
             left: 0;
             width: 100%;
             height: 4px;
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            background: var(--accent-gradient);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, rgba(67, 97, 238, 0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+        }
+
+        .feature:hover::after {
+            opacity: 1;
+        }
+
+        .feature-icon-container {
+            flex-shrink: 0;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 20px;
+            background: linear-gradient(135deg, rgba(67, 97, 238, 0.1), rgba(76, 201, 240, 0.1));
+            border: 2px solid rgba(67, 97, 238, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-icon-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent-gradient);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .feature:hover .feature-icon-container::before {
+            opacity: 0.1;
         }
 
         .feature-icon {
             font-size: 2.5rem;
-            margin-bottom: 1rem;
-            display: block;
+            position: relative;
+            z-index: 1;
+            transition: transform 0.3s ease;
+        }
+
+        .feature:hover .feature-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .feature-content {
+            flex: 1;
         }
 
         .feature h3 {
             color: var(--text-primary);
-            margin: 0 0 0.75rem 0;
-            font-size: 1.25rem;
-            font-weight: 600;
+            margin: 0 0 1rem 0;
+            font-size: 1.6rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
         }
 
         .feature p {
             color: var(--text-secondary);
-            margin: 0;
-            font-size: 0.95rem;
-            line-height: 1.6;
+            margin: 0 0 2rem 0;
+            font-size: 1.05rem;
+            line-height: 1.7;
         }
 
-        .user-welcome {
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 1.5rem;
-            margin-bottom: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 1rem;
+        .feature-btn {
+            margin-top: 0;
+            position: relative;
+            overflow: hidden;
         }
 
-        .user-welcome i {
-            color: var(--accent);
-            font-size: 1.5rem;
+        .feature-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s ease;
         }
 
-        .user-welcome span {
-            font-size: 1.1rem;
-            font-weight: 500;
+        .feature-btn:hover::before {
+            left: 100%;
         }
 
-        .btn-group {
-            margin-top: 2.5rem;
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
+        /* Responsive for feature layout */
+        @media (max-width: 768px) {
+            .feature {
+                flex-direction: column;
+                text-align: center;
+                padding: 2rem 1.5rem;
+            }
+            
+            .feature-icon-container {
+                width: 70px;
+                height: 70px;
+                margin-bottom: 1rem;
+            }
+            
+            .feature-content {
+                width: 100%;
+            }
         }
 
+        /* CTA Section */
+        .cta-section {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+            padding: 5rem 2rem;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-section::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(67, 97, 238, 0.1) 0%, transparent 70%);
+            z-index: 0;
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .cta-title {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--text-primary) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+        }
+
+        .cta-text {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+            line-height: 1.7;
+        }
+
+        /* Footer */
+        .footer {
+            padding: 2rem;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+
+        /* Buttons */
         .btn {
             display: inline-flex;
             align-items: center;
             gap: 0.5rem;
-            padding: 0.875rem 2rem;
+            padding: 0.875rem 1.75rem;
             border: none;
             border-radius: 12px;
             font-weight: 500;
@@ -233,18 +542,18 @@
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, var(--accent), var(--accent-light));
+            background: var(--accent-gradient);
             color: white;
-            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            box-shadow: 0 4px 15px rgba(67, 97, 238, 0.3);
         }
 
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+            box-shadow: 0 8px 25px rgba(67, 97, 238, 0.4);
         }
 
         .btn-secondary {
-            background: var(--bg-secondary);
+            background: var(--bg-accent);
             border: 1px solid var(--border);
             color: var(--text-primary);
         }
@@ -256,14 +565,14 @@
         }
 
         .btn-success {
-            background: linear-gradient(135deg, var(--success), #059669);
+            background: linear-gradient(135deg, var(--success), #22c55e);
             color: white;
-            box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+            box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
         }
 
         .btn-success:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 8px 25px rgba(74, 222, 128, 0.4);
         }
 
         .btn::before {
@@ -281,16 +590,69 @@
             left: 100%;
         }
 
-        .footer {
-            margin-top: 2.5rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-            color: var(--text-muted);
-            font-size: 0.9rem;
+        .feature-btn {
+            margin-top: 1rem;
+            padding: 0.75rem 1.75rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            box-shadow: 0 4px 10px rgba(67, 97, 238, 0.2);
         }
 
-        .footer p {
-            margin: 0;
+        .feature-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(67, 97, 238, 0.3);
+        }
+
+        /* Messages */
+        .messages {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+        }
+
+        .alert {
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .alert-success {
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid var(--success);
+            color: var(--success);
+        }
+
+        .alert-error {
+            background: rgba(248, 113, 113, 0.1);
+            border: 1px solid var(--error);
+            color: var(--error);
+        }
+
+        /* User Welcome */
+        .user-welcome {
+            background: var(--bg-accent);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1rem 1.5rem;
+            margin: 0 auto 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 1200px;
+        }
+
+        .user-welcome i {
+            color: var(--accent);
+            font-size: 1.2rem;
+        }
+
+        .user-welcome span {
+            font-size: 1rem;
+            font-weight: 500;
         }
 
         /* Animations */
@@ -302,6 +664,46 @@
             to {
                 opacity: 1;
                 transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 0 5px rgba(67, 97, 238, 0.5);
+            }
+            50% {
+                box-shadow: 0 0 20px rgba(67, 97, 238, 0.8), 0 0 30px rgba(76, 201, 240, 0.5);
             }
         }
 
@@ -321,152 +723,324 @@
             }
         }
 
-        /* Messages */
-        .messages {
-            margin-bottom: 2rem;
+        /* Feature animations */
+        .feature {
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.6s ease forwards;
         }
 
-        .alert {
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            font-weight: 500;
+        .feature:nth-child(1) {
+            animation-delay: 0.1s;
         }
 
-        .alert-success {
-            background: rgba(16, 185, 129, 0.1);
-            border: 1px solid var(--success);
-            color: var(--success);
+        .feature:nth-child(2) {
+            animation-delay: 0.2s;
         }
 
-        .alert-error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid #ef4444;
-            color: #ef4444;
+        .feature:nth-child(3) {
+            animation-delay: 0.3s;
+        }
+
+        .feature:nth-child(4) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Icon hover effect */
+        .feature-icon-container {
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover .feature-icon-container {
+            transform: scale(1.1);
+            background: rgba(67, 97, 238, 0.2);
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .container {
-                padding: 2rem;
-                margin: 1rem;
-            }
-
-            .logo {
-                font-size: 2.5rem;
-            }
-
-            .subtitle {
-                font-size: 1.1rem;
-            }
-
-            .features {
-                grid-template-columns: 1fr;
-                gap: 1rem;
-            }
-
-            .feature {
-                padding: 1.5rem;
-            }
-
-            .btn-group {
+            .header {
                 flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero-title {
+                font-size: 2rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-buttons {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .features-section {
+                padding: 2rem 1rem;
+            }
+
+            .section-title {
+                font-size: 1.5rem;
+            }
+
+            .cta-section {
+                padding: 2rem 1rem;
+            }
+
+            .cta-title {
+                font-size: 1.5rem;
             }
 
             .btn {
-                padding: 1rem 2rem;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .messages {
+                padding: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .logo {
+                font-size: 1.5rem;
+            }
+
+            .tagline {
+                font-size: 0.8rem;
+            }
+
+            .nav-buttons {
+                gap: 0.5rem;
             }
         }
     </style>
 </head>
 <body>
-    <!-- Theme Toggle -->
-    <div class="theme-toggle" onclick="toggleTheme()">
-        <i class="fas fa-sun sun"></i>
-        <i class="fas fa-moon moon"></i>
-    </div>
-
-    <div class="container">
-        <div class="logo">Vanity</div>
-        <div class="subtitle">个人任务管理与内容生成系统</div>
-        
-        <!-- Messages -->
-        {% if messages %}
-        <div class="messages">
-            {% for message in messages %}
-            <div class="alert alert-{{ message.tags }}">
-                <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
-                {{ message }}
-            </div>
-            {% endfor %}
+    <!-- Header -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">Vanity</div>
+            <div class="tagline">个人任务管理与内容生成系统</div>
         </div>
-        {% endif %}
-
-        <!-- User Welcome (for authenticated users) -->
-        {% if user.is_authenticated %}
-        <div class="user-welcome">
-            <i class="fas fa-user-circle"></i>
-            <span>欢迎回来，{{ user.username }}！</span>
-        </div>
-        {% endif %}
-        
-        <div class="features">
-            <div class="feature">
-                <span class="feature-icon">📝</span>
-                <h3>任务管理</h3>
-                <p>高效管理您的日常任务，支持优先级设置、意愿度标记和智能建议</p>
-            </div>
-            <div class="feature">
-                <span class="feature-icon">📖</span>
-                <h3>日记记录</h3>
-                <p>记录生活点滴，支持心情标记和图片上传，留下美好回忆</p>
-            </div>
-            <div class="feature">
-                <span class="feature-icon">🤖</span>
-                <h3>智能建议</h3>
-                <p>基于AI的任务建议和内容生成功能，提升工作效率</p>
-            </div>
-            <div class="feature">
-                <span class="feature-icon">📊</span>
-                <h3>日总结</h3>
-                <p>自动生成日常工作总结，跟踪进展和成就</p>
-            </div>
-        </div>
-        
-        <div class="btn-group">
+        <div class="nav-buttons">
             {% if user.is_authenticated %}
-                <a href="{% url 'content_generator:task_list' %}" class="btn btn-success">
-                    <i class="fas fa-tasks"></i>
-                    进入任务管理
-                </a>
-                <a href="{% url 'content_generator:event_list' %}" class="btn btn-primary">
-                    <i class="fas fa-book"></i>
-                    查看日记
-                </a>
                 <a href="{% url 'logout' %}" class="btn btn-secondary">
                     <i class="fas fa-sign-out-alt"></i>
-                    退出登录
+                    退出
                 </a>
             {% else %}
                 <a href="{% url 'login' %}" class="btn btn-primary">
                     <i class="fas fa-sign-in-alt"></i>
                     登录
                 </a>
-                <a href="{% url 'register' %}" class="btn btn-success">
+                <a href="{% url 'register' %}" class="btn btn-secondary">
                     <i class="fas fa-user-plus"></i>
                     注册
                 </a>
-                <a href="{% url 'admin:index' %}" class="btn btn-secondary">
-                    <i class="fas fa-cog"></i>
-                    管理员入口
+            {% endif %}
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <i class="fas fa-sun sun"></i>
+                <i class="fas fa-moon moon"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="messages">
+        {% for message in messages %}
+        <div class="alert alert-{{ message.tags }}">
+            <i class="fas fa-{% if message.tags == 'success' %}check-circle{% elif message.tags == 'error' %}exclamation-circle{% else %}info-circle{% endif %}"></i>
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- User Welcome (for authenticated users) -->
+    {% if user.is_authenticated %}
+    <div class="user-welcome">
+        <i class="fas fa-user-circle"></i>
+        <span>欢迎回来，{{ user.username }}！</span>
+    </div>
+    {% endif %}
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                AI 驱动的智能管理系统
+            </div>
+            <h1 class="hero-title">重新定义您的<br>任务管理体验</h1>
+            <p class="hero-subtitle">Vanity 结合了现代设计与人工智能技术，为您打造个性化的任务管理和内容生成平台。让每一天都充满效率与创意。</p>
+            <div class="hero-buttons">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'content_generator:task_list' %}" class="btn btn-primary">
+                        <i class="fas fa-rocket"></i>
+                        开始管理任务
+                    </a>
+                    <a href="{% url 'content_generator:event_list' %}" class="btn btn-secondary">
+                        <i class="fas fa-book-open"></i>
+                        查看我的日记
+                    </a>
+                {% else %}
+                    <a href="{% url 'register' %}" class="btn btn-success">
+                        <i class="fas fa-sparkles"></i>
+                        免费开始使用
+                    </a>
+                    <a href="{% url 'login' %}" class="btn btn-secondary">
+                        <i class="fas fa-sign-in-alt"></i>
+                        登录账户
+                    </a>
+                {% endif %}
+            </div>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="hero-stat-number">1000+</span>
+                    <span class="hero-stat-label">任务完成</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">98%</span>
+                    <span class="hero-stat-label">用户满意度</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="hero-stat-number">24/7</span>
+                    <span class="hero-stat-label">智能助手</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <h2 class="section-title">强大功能，简单易用</h2>
+        <p class="section-subtitle">探索 Vanity 为您提供的全方位智能管理解决方案</p>
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon-container">
+                    <span class="feature-icon">🎯</span>
+                </div>
+                <div class="feature-content">
+                    <h3>智能任务管理</h3>
+                    <p>基于AI的智能任务调度，支持优先级自动排序、意愿度评估和个性化建议。让您的每一天都高效有序，轻松应对各种挑战。</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'content_generator:task_list' %}" class="btn btn-primary feature-btn">
+                            <i class="fas fa-tasks"></i>
+                            立即管理任务
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                            <i class="fas fa-lock"></i>
+                            登录体验
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon-container">
+                    <span class="feature-icon">�</span>
+                </div>
+                <div class="feature-content">
+                    <h3>智能日记记录</h3>
+                    <p>记录生活点滴，支持丰富的心情标记、图片上传和智能标签分类。自动生成时间线，让美好回忆永远保存。</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'content_generator:event_list' %}" class="btn btn-primary feature-btn">
+                            <i class="fas fa-book-open"></i>
+                            开始记录
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                            <i class="fas fa-lock"></i>
+                            登录使用
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon-container">
+                    <span class="feature-icon">🤖</span>
+                </div>
+                <div class="feature-content">
+                    <h3>AI 智能助手</h3>
+                    <p>强大的AI引擎分析您的工作模式和生活习惯，提供个性化的任务建议、时间管理策略和内容生成服务。</p>
+                    {% if user.is_authenticated %}
+                        <a href="#" class="btn btn-primary feature-btn" onclick="alert('AI助手功能即将上线！')">
+                            <i class="fas fa-robot"></i>
+                            体验AI助手
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                            <i class="fas fa-lock"></i>
+                            登录体验
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="feature">
+                <div class="feature-icon-container">
+                    <span class="feature-icon">📊</span>
+                </div>
+                <div class="feature-content">
+                    <h3>数据可视化分析</h3>
+                    <p>深度数据分析和可视化报表，追踪您的进度和成就。智能生成日、周、月总结，助您持续改进和成长。</p>
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'content_generator:daily_summary' %}" class="btn btn-primary feature-btn">
+                            <i class="fas fa-chart-line"></i>
+                            查看分析
+                        </a>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary feature-btn">
+                            <i class="fas fa-lock"></i>
+                            登录查看
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2 class="cta-title">准备好开启高效之旅了吗？</h2>
+            <p class="cta-text">加入数万名用户的行列，体验 Vanity 带来的智能管理革命。让AI成为您的生产力伙伴，释放更多时间专注于真正重要的事情。</p>
+            {% if not user.is_authenticated %}
+                <a href="{% url 'register' %}" class="btn btn-success">
+                    <i class="fas fa-star"></i>
+                    立即免费体验
+                </a>
+            {% else %}
+                <a href="{% url 'content_generator:task_list' %}" class="btn btn-primary">
+                    <i class="fas fa-rocket"></i>
+                    继续我的任务
                 </a>
             {% endif %}
         </div>
+    </section>
 
-        <div class="footer">
-            <p>© 2025 Vanity 项目 - 让任务管理更简单、更智能</p>
-        </div>
-    </div>
+    <!-- Footer -->
+    <footer class="footer">
+        <p>© 2025 Vanity 项目 - 让任务管理更简单、更智能</p>
+        <p style="margin-top: 0.5rem; font-size: 0.8rem;">
+            {% if not user.is_authenticated %}
+                <a href="{% url 'admin:index' %}" style="color: var(--text-muted); text-decoration: none;">管理员入口</a>
+            {% endif %}
+        </p>
+    </footer>
 
     <script>
         // Theme Toggle
@@ -490,60 +1064,6 @@
             const savedTheme = localStorage.getItem('theme') || 'dark';
             document.body.setAttribute('data-theme', savedTheme);
         });
-
-        // Add entrance animation
-        document.addEventListener('DOMContentLoaded', function() {
-            const container = document.querySelector('.container');
-            container.classList.add('slideUp');
-        });
     </script>
-</body>
-</html>
-            padding-top: 1rem;
-            border-top: 1px solid #eee;
-            color: #999;
-            font-size: 0.9rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="logo">Vanity</div>
-        <div class="subtitle">个人任务管理与内容生成系统</div>
-        
-        <div class="features">
-            <div class="feature">
-                <h3>📝 任务管理</h3>
-                <p>高效管理您的日常任务，支持添加、编辑、完成状态切换</p>
-            </div>
-            <div class="feature">
-                <h3>� 日记</h3>
-                <p>记录生活点滴，留下美好回忆</p>
-            </div>
-            <div class="feature">
-                <h3>🤖 智能建议</h3>
-                <p>基于AI的任务建议和内容生成功能</p>
-            </div>
-            <div class="feature">
-                <h3>📊 日总结</h3>
-                <p>自动生成日常工作总结，回顾进展</p>
-            </div>
-        </div>
-        
-        <div class="btn-group">
-            {% if user.is_authenticated %}
-                <a href="{% url 'content_generator:task_list' %}" class="btn btn-primary">进入任务管理</a>
-                <a href="{% url 'logout' %}" class="btn btn-secondary">登出</a>
-            {% else %}
-                <a href="{% url 'login' %}" class="btn btn-primary">登录</a>
-                <a href="{% url 'register' %}" class="btn btn-primary">注册</a>
-                <a href="{% url 'admin:index' %}" class="btn btn-secondary">管理员入口</a>
-            {% endif %}
-        </div>
-        
-        <div class="footer">
-            <p>欢迎使用 Vanity 项目 &copy; 2024</p>
-        </div>
-    </div>
 </body>
 </html>
